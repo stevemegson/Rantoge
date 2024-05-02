@@ -4,7 +4,9 @@ A replacement for the Rantoge motherboard using an ESP32 and DRV8825 stepper dri
 
 ## Pin assignments
 
-The code expects these GPIO pins to be used:
+The code is intended for use with [this PCB](pcb/README.md).
+
+It expects these GPIO pins to be used:
 
 | Pin| Connection |
 | --- | --- |
@@ -15,7 +17,7 @@ The code expects these GPIO pins to be used:
 | 21 | Hours STEP |
 | 22 | Hours SLEEP |
 
-Buttons should be active low (connected to ground when pressed).
+Buttons are active low (connected to ground when pressed).
 
 It expects the DRV8825s to be configured for 1/32 microstepping (otherwise, change `MICROSTEPPING_MULTIPLIER`).
 
