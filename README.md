@@ -38,3 +38,5 @@ It expects the DRV8825s to be configured for 1/32 microstepping (otherwise, chan
 	- Long press to calibrate. The motor will step slowly until the button is released.
 
 **TO DO: Configuring the current time and displayed time using only buttons.**
+
+![config page](./config-page.png)
