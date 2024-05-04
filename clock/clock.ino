@@ -25,17 +25,18 @@ void setup() {
   Serial.begin(115200);
   delay(1000);
 
+  start_buttons();
+
   wifi_manager.begin();
   wifi_manager.start_mdns("clock");
 
   start_server();
-  start_buttons();
 
   clock_manager.set_logger(send_message);
-  clock_manager.start_ntp();
-  
+  clock_manager.start_ntp(); 
+
   time_zone_manager.set_logger(send_message);
-  time_zone_manager.begin();
+  time_zone_manager.begin(&clock_manager);
 }
 
 void loop() {
@@ -147,7 +148,7 @@ void start_server() {
       Serial.printf("Client reconnected. Last message ID that it got is: %u\n", client->lastId());
     }
 
-    client->send("Connected", NULL, millis(), 1000);
+    client->send("Connected", NULL, millis(), 500);
   });
   server.addHandler(&events);
 
@@ -155,6 +156,8 @@ void start_server() {
 }
 
 void start_buttons() {
+  ESP_ERROR_CHECK(esp_event_loop_create_default());
+
   left_button.begin();
 
   left_button.onLongPress([](){

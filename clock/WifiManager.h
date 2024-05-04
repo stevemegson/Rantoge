@@ -6,7 +6,7 @@
 class WifiManager {
 public:
   void begin();
-  void start_mdns(char* chost);
+  void start_mdns(const char* host);
   void set_credentials(String ssid, String password);
 
 private:

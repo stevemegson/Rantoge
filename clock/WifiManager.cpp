@@ -59,7 +59,7 @@ void WifiManager::begin() {
   }
 }
 
-void WifiManager::start_mdns(char* host) {
+void WifiManager::start_mdns(const char* host) {
   if (!MDNS.begin(host)) {
     Serial.println("Error setting up mDNS responder");
   }

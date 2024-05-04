@@ -1,6 +1,8 @@
 #ifndef TIMEZONEMANAGER_H
 #define TIMEZONEMANAGER_H
 
+#include "ClockManager.h"
+
 #include <Arduino.h>
 #include <Preferences.h>
 
@@ -8,7 +10,7 @@ typedef void (*logger_cb_t) (const char * format, ...);
 
 class TimeZoneManager {
 public:
-  void begin();
+  void begin(ClockManager *clock);
   void set(String tz);
   void set_from_api();
   void set_logger(logger_cb_t logger);

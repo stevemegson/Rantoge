@@ -55,7 +55,7 @@ void ClockManager::tick() {
     return;
   }
 
-  (*_logger)("%02d:%02d -> %02d:%02d\n", _displayedHour, _displayedMinute, currentHour, currentMinute);
+  (*_logger)("%02d:%02d -> %02d:%02d", _displayedHour, _displayedMinute, currentHour, currentMinute);
 
   int offsetHour = (currentHour - _displayedHour) % 24;
   if (offsetHour < 0) {

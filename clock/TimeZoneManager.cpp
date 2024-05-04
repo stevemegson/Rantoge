@@ -11,7 +11,7 @@ void TimeZoneManager::set_logger(logger_cb_t logger) {
 }
 
 
-void TimeZoneManager::begin() {
+void TimeZoneManager::begin(ClockManager *clock) {
   _preferences.begin("time", false);
   String tz = _preferences.getString("tz", "");
   _preferences.end();
@@ -19,12 +19,16 @@ void TimeZoneManager::begin() {
   if (tz != "") {
     setenv("TZ", tz.c_str(), 1);
     tzset();
-    (*_logger)("Loaded TZ = %s", tz);
+    (*_logger)("Loaded TZ = %s", tz.c_str());
   } else {
     if (WiFi.status() == WL_CONNECTED) {
       set_from_api();
     }
   }
+
+  struct tm timeinfo;
+  getLocalTime(&timeinfo);
+  clock->set_displayed_time(timeinfo.tm_hour, timeinfo.tm_min);
 }
 
 void TimeZoneManager::set(String tz) {

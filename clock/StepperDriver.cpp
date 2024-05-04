@@ -35,12 +35,14 @@ void StepperDriver::step(bool hour, bool minute) {
       digitalWrite(MINUTE_STEP_PIN, HIGH);
       delayMicroseconds(50);
       digitalWrite(MINUTE_STEP_PIN, LOW);
+      minute_steps--;
     }
 
     if(offset % 12 == 0) {
       digitalWrite(HOUR_STEP_PIN, HIGH);
       delayMicroseconds(50);
       digitalWrite(HOUR_STEP_PIN, LOW);
+      hour_steps--;
     }
 
     delayMicroseconds(30);

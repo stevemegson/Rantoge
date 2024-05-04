@@ -183,7 +183,7 @@ const char CONFIG_HTML[] = R"---(
             var source = new EventSource('/events');
 
             source.addEventListener('message', function (e) {
-                document.getElementById("log-messages").innerHTML += e.data;
+                document.getElementById("log-messages").innerHTML += e.data + "\n";
                 console.log("message", e.data);
             }, false);
 
