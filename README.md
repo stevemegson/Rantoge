@@ -36,6 +36,7 @@ It expects the DRV8825s to be configured for 1/32 microstepping (otherwise, chan
 ### Buttons
 - The left and right buttons control hours and minutes:
 	- Long press to calibrate. The motor will step slowly until the button is released.
+- Triple click the left button to toggle demo mode. The clock will cycle through advancing hour, then both, then minute.
 
 **TO DO: Configuring the current time and displayed time using only buttons.**
 

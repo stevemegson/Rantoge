@@ -7,7 +7,7 @@
 
 ## Parts
 - 2 &times; DRV8825 "stepstick" module
-- 2 &times; 6mmx6mm push button switch
+- 2 &times; 6mmx6mmx11mm push button switch
 - 5 &times; JST B5B-ZR (LF)(SN) 5-pin ZH series connectors
 - MT3608 step up power supply module
 - 100 uF capacitor
