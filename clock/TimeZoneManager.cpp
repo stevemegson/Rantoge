@@ -45,6 +45,7 @@ void TimeZoneManager::set(String tz) {
 }
 
 void TimeZoneManager::set_from_api() {
+  #if ENABLE_WIFI == 1
   WiFiClient client;
   HTTPClient http;
 
@@ -62,6 +63,7 @@ void TimeZoneManager::set_from_api() {
     (*_logger)("Error code: %s", httpResponseCode);
   }
   http.end();
+  #endif
 }
 
 const char* TimeZoneManager::convert_name(const char* tzdata) {

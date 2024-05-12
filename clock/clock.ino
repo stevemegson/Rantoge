@@ -1,23 +1,36 @@
-#include <ESPAsyncWebServer.h>
+#define ENABLE_WIFI 1
+#define ENABLE_BUTTONS 1
+
+#if ENABLE_BUTTONS == 1
 #include <espasyncbutton.hpp>
+#endif
+
+#if ENABLE_WIFI == 1
+#include <ESPAsyncWebServer.h>
+#include "WifiManager.h"
+#include "HTML.h"
+#endif
+
 #include <Preferences.h>
 #include <time.h>
 #include <sys/time.h>
 
-#include "WifiManager.h"
 #include "ClockManager.h"
 #include "TimeZoneManager.h"
-#include "HTML.h"
 
-AsyncEventButton left_button(GPIO_NUM_16, LOW);
-AsyncEventButton right_button(GPIO_NUM_17, LOW);
-
-AsyncWebServer server(80);
-AsyncEventSource events("/events");
-
-WifiManager wifi_manager;
 ClockManager clock_manager;
 TimeZoneManager time_zone_manager;
+
+#if ENABLE_BUTTONS == 1
+AsyncEventButton left_button(GPIO_NUM_16, LOW);
+AsyncEventButton right_button(GPIO_NUM_17, LOW);
+#endif
+
+#if ENABLE_WIFI == 1
+AsyncWebServer server(80);
+AsyncEventSource events("/events");
+WifiManager wifi_manager;
+#endif
 
 typedef void (*logger_cb_t) (const char * format, ...);
 
@@ -25,15 +38,20 @@ void setup() {
   Serial.begin(115200);
   delay(1000);
 
+#if ENABLE_BUTTONS == 1
   start_buttons();
+#endif
 
+#if ENABLE_WIFI == 1
   wifi_manager.begin();
   wifi_manager.start_mdns("clock");
 
   start_server();
 
-  clock_manager.set_logger(send_message);
   clock_manager.start_ntp(); 
+#endif
+
+  clock_manager.set_logger(send_message);
 
   time_zone_manager.set_logger(send_message);
   time_zone_manager.begin(&clock_manager);
@@ -53,9 +71,14 @@ void send_message(const char* format, ...)
   va_end (args);
 
   Serial.println(buffer);
+  
+#if ENABLE_WIFI == 1  
   events.send(buffer, "message", millis());
+#endif
 }
 
+
+#if ENABLE_WIFI == 1
 void start_server() {
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send_P(200, "text/html", CONFIG_HTML);
@@ -154,7 +177,9 @@ void start_server() {
 
   server.begin();
 }
+#endif
 
+#if ENABLE_BUTTONS == 1
 void start_buttons() {
   ESP_ERROR_CHECK(esp_event_loop_create_default());
 
@@ -182,6 +207,4 @@ void start_buttons() {
 
   right_button.enable();
 }
-
-
-
+#endif
