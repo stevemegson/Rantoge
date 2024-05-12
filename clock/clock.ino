@@ -198,8 +198,15 @@ void start_buttons() {
     clock_manager.request_end_calibrate();
   });
 
+  left_button.onClick([]() {
+    clock_manager.adjust_displayed_hour(-1);
+  });
+
   left_button.onMultiClick([](int32_t counter){
-    if(counter == 3) {
+    if(counter == 2) {
+      clock_manager.adjust_displayed_hour(1);
+    }
+    else if(counter == 3) {
       clock_manager.toggle_demo();
     }
   });
@@ -214,6 +221,19 @@ void start_buttons() {
 
   right_button.onLongRelease([](){
     clock_manager.request_end_calibrate();
+  });
+
+  right_button.onClick([]() {
+    clock_manager.adjust_displayed_minute(-1);
+  });
+
+  right_button.onMultiClick([](int32_t counter){
+    if(counter == 2) {
+      clock_manager.adjust_displayed_minute(1);
+    }
+    else if(counter == 3) {
+      // TO DO: Start setting displayed and current minute
+    }
   });
 
   right_button.enable();

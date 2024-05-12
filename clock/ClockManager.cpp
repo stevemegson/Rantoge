@@ -50,8 +50,8 @@ void ClockManager::tick() {
     delay(500);
     _stepper.step(false, true);
 
-    _displayedHour = (_displayedHour + 2) % 24;
-    _displayedMinute = (_displayedMinute + 2) % 60;
+    adjust_displayed_hour(2);
+    adjust_displayed_minute(2);
 
     return;
   }
@@ -70,15 +70,17 @@ void ClockManager::tick() {
 
   (*_logger)("%02d:%02d -> %02d:%02d", _displayedHour, _displayedMinute, currentHour, currentMinute);
 
-  int offsetHour = (currentHour - _displayedHour) % 24;
-  if (offsetHour < 0) {
+  int offsetHour = currentHour - _displayedHour;
+  if (offsetHour < 0)
     offsetHour += 24;
-  }
+  else if (offsetHour >= 24)
+    offsetHour -= 24;
 
-  int offsetMinute = (currentMinute - _displayedMinute) % 60;
-  if (offsetMinute < 0) {
+  int offsetMinute = currentMinute - _displayedMinute;
+  if (offsetMinute < 0)
     offsetMinute += 60;
-  }
+  else if (offsetMinute >= 60)
+    offsetMinute -= 60;
 
   if (offsetMinute > 50) {
     offsetMinute = 0;
@@ -87,9 +89,9 @@ void ClockManager::tick() {
   while (offsetHour > 0 && offsetMinute > 0) {
     (*_logger)("  Advance hour and minute");
     offsetHour--;
-    _displayedHour = (_displayedHour + 1) % 24;
+    adjust_displayed_hour(1);
     offsetMinute--;
-    _displayedMinute = (_displayedMinute + 1) % 60;
+    adjust_displayed_minute(1);
 
     _stepper.step(true, true);
   }
@@ -97,7 +99,7 @@ void ClockManager::tick() {
   while (offsetHour > 0) {
     (*_logger)("  Advance hour");
     offsetHour--;
-    _displayedHour = (_displayedHour + 1) % 24;
+    adjust_displayed_hour(1);
 
     _stepper.step(true, false);
   }
@@ -105,7 +107,7 @@ void ClockManager::tick() {
   while (offsetMinute > 0) {
     (*_logger)("  Advance minute");
     offsetMinute--;
-    _displayedMinute = (_displayedMinute + 1) % 60;
+    adjust_displayed_minute(1);
 
     _stepper.step(false, true);
   }
@@ -140,6 +142,22 @@ void ClockManager::set_displayed_time(int hour, int minute) {
   _displayedMinute = minute;
 
   (*_logger)("Set displayed time to %02d:%02d\n", _displayedHour, _displayedMinute);
+}
+
+void ClockManager::adjust_displayed_hour(int count) {
+  _displayedHour = _displayedHour + count;
+  if (_displayedHour < 0)
+    _displayedHour += 24;
+  else if (_displayedHour >= 24)
+    _displayedHour -= 24;
+}
+
+void ClockManager::adjust_displayed_minute(int count) {
+  _displayedMinute = _displayedMinute + count;
+  if (_displayedMinute < 0)
+    _displayedMinute += 60;
+  else if (_displayedMinute >= 60)
+    _displayedHour -= 60;
 }
 
 void ClockManager::set_current_time(int hour, int minute, int second) {

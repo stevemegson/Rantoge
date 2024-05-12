@@ -19,6 +19,9 @@ public:
   void request_end_calibrate();
   void toggle_demo();
 
+  void adjust_displayed_hour(int count);
+  void adjust_displayed_minute(int count);
+
 private:
   enum state_t { RUN,
                  CALIBRATE_HOUR,
