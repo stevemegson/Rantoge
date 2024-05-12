@@ -17,11 +17,13 @@ public:
   void request_calibrate_hour();
   void request_calibrate_minute();
   void request_end_calibrate();
+  void toggle_demo();
 
 private:
   enum state_t { RUN,
                  CALIBRATE_HOUR,
-                 CALIBRATE_MINUTE };
+                 CALIBRATE_MINUTE,
+                 DEMO };
 
   bool _calibrating = false;
   int _displayedHour = 0;

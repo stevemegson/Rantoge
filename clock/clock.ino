@@ -166,6 +166,11 @@ void start_server() {
     request->send_P(200, "text/plain", "OK");   
   });
 
+  server.on("/toggle-demo", HTTP_POST, [](AsyncWebServerRequest *request) {
+    clock_manager.toggle_demo();
+    request->send_P(200, "text/plain", "OK");   
+  });
+
   events.onConnect([](AsyncEventSourceClient *client) {
     if (client->lastId()) {
       Serial.printf("Client reconnected. Last message ID that it got is: %u\n", client->lastId());
@@ -191,6 +196,12 @@ void start_buttons() {
 
   left_button.onLongRelease([](){
     clock_manager.request_end_calibrate();
+  });
+
+  left_button.onMultiClick([](int32_t counter){
+    if(counter == 3) {
+      clock_manager.toggle_demo();
+    }
   });
 
   left_button.enable();

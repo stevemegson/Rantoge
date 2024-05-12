@@ -43,6 +43,19 @@ void ClockManager::tick() {
     return;
   }
 
+  if (_state == DEMO) {
+    _stepper.step(true, false);
+    delay(500);
+    _stepper.step(true, true);
+    delay(500);
+    _stepper.step(false, true);
+
+    _displayedHour = (_displayedHour + 2) % 24;
+    _displayedMinute = (_displayedMinute + 2) % 60;
+
+    return;
+  }
+
   struct tm currentTime;
   if (!getLocalTime(&currentTime)) {
     return;
@@ -109,6 +122,17 @@ void ClockManager::request_calibrate_minute() {
 void ClockManager::request_end_calibrate() {
   _calibrating = false;
   _state = RUN;
+}
+
+void ClockManager::toggle_demo() {
+  _calibrating = false;
+  if (_state == DEMO) {
+    (*_logger)("End demo");
+    _state = RUN;
+  } else {
+    (*_logger)("Start demo");
+    _state = DEMO;
+  }
 }
 
 void ClockManager::set_displayed_time(int hour, int minute) {
