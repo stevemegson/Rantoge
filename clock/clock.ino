@@ -1,5 +1,7 @@
 #define ENABLE_WIFI 1
+#define ENABLE_SNTP 1
 #define ENABLE_BUTTONS 1
+#define ENABLE_GPS 0
 
 #if ENABLE_BUTTONS == 1
 #include <espasyncbutton.hpp>
@@ -9,6 +11,10 @@
 #include <ESPAsyncWebServer.h>
 #include "WifiManager.h"
 #include "HTML.h"
+#endif
+
+#if ENABLE_GPS == 1
+#include "GPS.h"
 #endif
 
 #include <Preferences.h>
@@ -22,14 +28,18 @@ ClockManager clock_manager;
 TimeZoneManager time_zone_manager;
 
 #if ENABLE_BUTTONS == 1
-AsyncEventButton left_button(GPIO_NUM_16, LOW);
-AsyncEventButton right_button(GPIO_NUM_17, LOW);
+AsyncEventButton left_button(GPIO_NUM_26, LOW);
+AsyncEventButton right_button(GPIO_NUM_23, LOW);
 #endif
 
 #if ENABLE_WIFI == 1
 AsyncWebServer server(80);
 AsyncEventSource events("/events");
 WifiManager wifi_manager;
+#endif
+
+#if ENABLE_GPS == 1
+GpsTimeSource gps(&clock_manager);
 #endif
 
 typedef void (*logger_cb_t) (const char * format, ...);
@@ -47,7 +57,9 @@ void setup() {
   wifi_manager.start_mdns("clock");
 
   start_server();
+#endif  
 
+#if ENABLE_WIFI == 1 && ENABLE_SNTP == 1
   clock_manager.start_ntp(); 
 #endif
 
@@ -55,10 +67,19 @@ void setup() {
 
   time_zone_manager.set_logger(send_message);
   time_zone_manager.begin(&clock_manager);
+
+#if ENABLE_GPS == 1
+  gps.begin();
+#endif  
 }
 
 void loop() {
+#if ENABLE_GPS == 1
+  gps.tick();
+#endif
+
   clock_manager.tick();
+
   delay(1000);
 }
 
