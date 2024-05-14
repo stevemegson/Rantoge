@@ -35,9 +35,16 @@ It expects the DRV8825s to be configured for 1/32 microstepping (otherwise, chan
 
 ### Buttons
 - The left and right buttons control hours and minutes:
+	- Single click to increment, double click to decrement (minutes will skip the next advance, rather than advancing 59 times).
 	- Long press to calibrate. The motor will step slowly until the button is released.
 - Triple click the left button to toggle demo mode. The clock will cycle through advancing hour, then both, then minute.
+- Triple click the right button to set the displayed and current minute.
+	- The clock will advance through the minutes automatically.
+	- Single click the right button when it is advancing towards 00.
+	- Double click the right button when it is advancing towards the current minute (as it was when the process started).
+	- If the current time has been set from another source (SNTP or the config page), you only need to identify either the current minute or 00. The clock assumes that the current time is set correctly, and only needs to determine the displayed minute.
+	- If the current time has not been set, or was set using this process, then you need to identify both the current minute and 00 to allow the clock to idenify the current and displayed minutes.
+- (There is no need for an equivalent process for hours - the clock doesn't need to know what hour it is displaying.)
 
-**TO DO: Configuring the current time and displayed time using only buttons.**
 
 ![config page](./config-page.png)
