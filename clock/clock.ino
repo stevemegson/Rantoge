@@ -42,15 +42,22 @@ void setup() {
 #endif
 
   clock_manager.set_logger(send_message);
+  clock_manager.begin();
 
 #if ENABLE_WIFI == 1
   wifi_manager.begin();
   wifi_manager.start_mdns("clock");
 
   start_server();
-
-  clock_manager.start_ntp();
 #endif
+
+#if ENABLE_WIFI == 1 && ENABLE_SNTP == 1
+  clock_manager.start_ntp(); 
+#endif
+
+  if(clock_manager.time_source == NONE) {
+    clock_manager.set_current_time(0,0,0);
+  }
 
   time_zone_manager.set_logger(send_message);
   time_zone_manager.begin(&clock_manager);

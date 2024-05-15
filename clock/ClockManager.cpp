@@ -2,6 +2,10 @@
 
 #include "ClockManager.h"
 
+void ClockManager::begin() {
+  _stepper.begin();
+}
+
 void ClockManager::start_ntp() {
   configTime(0, 0, "pool.ntp.org");
 
@@ -100,60 +104,58 @@ void ClockManager::adjust_displayed_minute(int count) {
 
 void ClockManager::set_current_time(int hour, int minute, int second) {
   struct tm timeinfo;
-  getLocalTime(&timeinfo);
+  time_t now = time(0);
+  localtime_r(&now, &timeinfo);
 
   timeinfo.tm_hour = hour;
   timeinfo.tm_min = minute;
   timeinfo.tm_sec = second;
   timeinfo.tm_isdst = -1;
 
-  time_t timeval = mktime(&timeinfo);
-  time(&timeval);
-
-  (*_logger)("%04d-%02d-%02d %02d:%02d:%02d  ", timeinfo.tm_year, timeinfo.tm_mon, timeinfo.tm_mday, hour, minute, second, timeval);
-
+  time_t t = mktime(&timeinfo);
+  struct timeval new_time = { .tv_sec = t };
+  settimeofday(&new_time, NULL);
 
   log_current_time();
 }
 
 void ClockManager::set_current_date(int day, int month, int year) {
   struct tm timeinfo;
-  getLocalTime(&timeinfo);
+  time_t now = time(0);
+  localtime_r(&now, &timeinfo);
 
   timeinfo.tm_mday = day;
   timeinfo.tm_mon = month - 1;
   timeinfo.tm_year = year - 1900;
   timeinfo.tm_isdst = -1;
 
-  time_t timeval = mktime(&timeinfo);
-  time(&timeval);
+  time_t t = mktime(&timeinfo);
+  struct timeval new_time = { .tv_sec = t };
+  settimeofday(&new_time, NULL);
 
   log_current_time();
 }
 
 void ClockManager::log_current_time() {
   struct tm timeinfo;
-  getLocalTime(&timeinfo);
-
+  time_t now = time(0);
+  localtime_r(&now, &timeinfo);
   char buffer[32];
   strftime(buffer, 31, "%Y-%m-%d %H:%M:%S %z", &timeinfo);
   (*_logger)("Current time is %s", buffer);
 }
 
 void ClockManager::sync_to_current_time() {
-  struct tm currentTime;
-  if (!getLocalTime(&currentTime)) {
-    return;
-  }
+  struct tm timeinfo;
+  time_t now = time(0);
+  localtime_r(&now, &timeinfo);
 
-  int currentHour = currentTime.tm_hour;
-  int currentMinute = currentTime.tm_min;
+  int currentHour = timeinfo.tm_hour;
+  int currentMinute = timeinfo.tm_min;
 
   if (currentHour == _displayedHour && currentMinute == _displayedMinute) {
     return;
   }
-
-  (*_logger)("%02d:%02d -> %02d:%02d", _displayedHour, _displayedMinute, currentHour, currentMinute);
 
   int offsetHour = currentHour - _displayedHour;
   if (offsetHour < 0)
@@ -170,6 +172,12 @@ void ClockManager::sync_to_current_time() {
   if (offsetMinute > 50) {
     offsetMinute = 0;
   }
+
+  if(offsetHour == 0 && offsetMinute == 0) {
+    return;
+  }
+
+  (*_logger)("%02d:%02d -> %02d:%02d", _displayedHour, _displayedMinute, currentHour, currentMinute);
 
   while (offsetHour > 0 && offsetMinute > 0) {
     (*_logger)("  Advance hour and minute");
@@ -211,10 +219,10 @@ void ClockManager::set_minutes() {
   unsigned long startMillis = millis();
   int currentMinuteAtStart = 0;
   if (timeKnown) {
-    struct tm currentTime;
-    if (getLocalTime(&currentTime)) {
-      currentMinuteAtStart = currentTime.tm_min;
-    }
+    struct tm timeinfo;
+    time_t now = time(0);
+    localtime_r(&now, &timeinfo);      
+    currentMinuteAtStart = timeinfo.tm_min;
   }
 
   for (int index = 1; index <= 60; index++) {

@@ -34,19 +34,19 @@ void StepperDriver::step(bool hour, bool minute) {
 
     if(offset % 5 == 0) {
       digitalWrite(PIN_MINUTE_STEP, HIGH);
-      delayMicroseconds(50);
+      delayMicroseconds(5);
       digitalWrite(PIN_MINUTE_STEP, LOW);
       minute_steps--;
     }
 
     if(offset % 12 == 0) {
       digitalWrite(PIN_HOUR_STEP, HIGH);
-      delayMicroseconds(50);
+      delayMicroseconds(5);
       digitalWrite(PIN_HOUR_STEP, LOW);
       hour_steps--;
     }
 
-    delayMicroseconds(30);
+    delayMicroseconds(STEP_INTERVAL);
   }  
 
   digitalWrite(PIN_HOUR_SLEEP, LOW);
@@ -81,9 +81,9 @@ void StepperDriver::calibrate_hour(bool &cont) {
 
   while(cont) {
       digitalWrite(PIN_HOUR_STEP, HIGH);
-      delayMicroseconds(50);
+      delayMicroseconds(5);
       digitalWrite(PIN_HOUR_STEP, LOW);
-      delayMicroseconds(1000);
+      delayMicroseconds(4 * 12 * STEP_INTERVAL);
   }
 
   digitalWrite(PIN_HOUR_SLEEP, LOW);
@@ -95,9 +95,9 @@ void StepperDriver::calibrate_minute(bool &cont) {
 
   while(cont) {
       digitalWrite(PIN_MINUTE_STEP, HIGH);
-      delayMicroseconds(50);
+      delayMicroseconds(5);
       digitalWrite(PIN_MINUTE_STEP, LOW);
-      delayMicroseconds(1000);
+      delayMicroseconds(4 * 5 * STEP_INTERVAL);
   }
 
   digitalWrite(PIN_MINUTE_SLEEP, LOW);
