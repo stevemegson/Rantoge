@@ -1,12 +1,13 @@
 #include "GPS.h"
+#include "settings.h"
 
 GpsTimeSource::GpsTimeSource(ClockManager* clock)
-  : _serial(HARDWARE_SERIAL) {
+  : _serial(GPS_HARDWARE_SERIAL) {
   _clock_manager = clock;
 }
 
 void GpsTimeSource::begin() {
-  _serial.begin(BAUD);
+  _serial.begin(GPS_BAUD);
 }
 
 void GpsTimeSource::tick() {

@@ -1,7 +1,4 @@
-#define ENABLE_WIFI 1
-#define ENABLE_SNTP 1
-#define ENABLE_BUTTONS 1
-#define ENABLE_GPS 0
+#include "settings.h"
 
 #if ENABLE_BUTTONS == 1
 #include <espasyncbutton.hpp>
@@ -28,8 +25,8 @@ ClockManager clock_manager;
 TimeZoneManager time_zone_manager;
 
 #if ENABLE_BUTTONS == 1
-AsyncEventButton left_button(GPIO_NUM_26, LOW);
-AsyncEventButton right_button(GPIO_NUM_23, LOW);
+AsyncEventButton left_button(PIN_LEFT_BUTTON, LOW);
+AsyncEventButton right_button(PIN_RIGHT_BUTTON, LOW);
 #endif
 
 #if ENABLE_WIFI == 1
@@ -52,6 +49,8 @@ void setup() {
   start_buttons();
 #endif
 
+  clock_manager.set_logger(send_message);
+
 #if ENABLE_WIFI == 1
   wifi_manager.begin();
   wifi_manager.start_mdns("clock");
@@ -62,8 +61,6 @@ void setup() {
 #if ENABLE_WIFI == 1 && ENABLE_SNTP == 1
   clock_manager.start_ntp(); 
 #endif
-
-  clock_manager.set_logger(send_message);
 
   time_zone_manager.set_logger(send_message);
   time_zone_manager.begin(&clock_manager);
@@ -83,21 +80,19 @@ void loop() {
   delay(1000);
 }
 
-void send_message(const char* format, ...)
-{
+void send_message(const char *format, ...) {
   char buffer[256];
   va_list args;
   va_start(args, format);
   vsnprintf(buffer, 255, format, args);
-  va_end (args);
+  va_end(args);
 
   Serial.println(buffer);
-  
-#if ENABLE_WIFI == 1  
+
+#if ENABLE_WIFI == 1
   events.send(buffer, "message", millis());
 #endif
 }
-
 
 #if ENABLE_WIFI == 1
 void start_server() {
@@ -124,6 +119,7 @@ void start_server() {
       int m = request->getParam("m", true)->value().toInt();
 
       clock_manager.set_current_time(h, m, 0);
+      clock_manager.time_source = WEB;
 
       request->send_P(200, "text/plain", "OK");
     } else {
@@ -150,7 +146,7 @@ void start_server() {
       String tz = request->getParam("tz", true)->value();
       time_zone_manager.set(tz);
 
-      request->send_P(200, "text/plain", "OK");      
+      request->send_P(200, "text/plain", "OK");
     } else {
       request->send_P(400, "text/plain", "Missing parameters");
     }
@@ -174,22 +170,22 @@ void start_server() {
 
   server.on("/calibrate-hour", HTTP_POST, [](AsyncWebServerRequest *request) {
     clock_manager.request_calibrate_hour();
-    request->send_P(200, "text/plain", "OK");   
+    request->send_P(200, "text/plain", "OK");
   });
 
   server.on("/calibrate-minute", HTTP_POST, [](AsyncWebServerRequest *request) {
     clock_manager.request_calibrate_minute();
-    request->send_P(200, "text/plain", "OK");   
+    request->send_P(200, "text/plain", "OK");
   });
 
   server.on("/calibrate-end", HTTP_POST, [](AsyncWebServerRequest *request) {
     clock_manager.request_end_calibrate();
-    request->send_P(200, "text/plain", "OK");   
+    request->send_P(200, "text/plain", "OK");
   });
 
   server.on("/toggle-demo", HTTP_POST, [](AsyncWebServerRequest *request) {
     clock_manager.toggle_demo();
-    request->send_P(200, "text/plain", "OK");   
+    request->send_P(200, "text/plain", "OK");
   });
 
   events.onConnect([](AsyncEventSourceClient *client) {
@@ -211,23 +207,22 @@ void start_buttons() {
 
   left_button.begin();
 
-  left_button.onLongPress([](){
+  left_button.onLongPress([]() {
     clock_manager.request_calibrate_hour();
   });
 
-  left_button.onLongRelease([](){
+  left_button.onLongRelease([]() {
     clock_manager.request_end_calibrate();
   });
 
   left_button.onClick([]() {
-    clock_manager.adjust_displayed_hour(-1);
+    clock_manager.increment_hour();
   });
 
-  left_button.onMultiClick([](int32_t counter){
-    if(counter == 2) {
-      clock_manager.adjust_displayed_hour(1);
-    }
-    else if(counter == 3) {
+  left_button.onMultiClick([](int32_t counter) {
+    if (counter == 2) {
+      clock_manager.decrement_hour();
+    } else if (counter == 3) {
       clock_manager.toggle_demo();
     }
   });
@@ -236,24 +231,23 @@ void start_buttons() {
 
   right_button.begin();
 
-  right_button.onLongPress([](){
+  right_button.onLongPress([]() {
     clock_manager.request_calibrate_minute();
   });
 
-  right_button.onLongRelease([](){
+  right_button.onLongRelease([]() {
     clock_manager.request_end_calibrate();
   });
 
   right_button.onClick([]() {
-    clock_manager.adjust_displayed_minute(-1);
+    clock_manager.increment_minute();
   });
 
-  right_button.onMultiClick([](int32_t counter){
-    if(counter == 2) {
-      clock_manager.adjust_displayed_minute(1);
-    }
-    else if(counter == 3) {
-      // TO DO: Start setting displayed and current minute
+  right_button.onMultiClick([](int32_t counter) {
+    if (counter == 2) {
+      clock_manager.decrement_minute();
+    } else if (counter == 3) {
+      clock_manager.request_set_minutes();
     }
   });
 
