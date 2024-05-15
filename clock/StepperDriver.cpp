@@ -1,15 +1,16 @@
 #include "StepperDriver.h"
+#include "settings.h"
 
 void StepperDriver::begin() {
-  pinMode(HOUR_STEP_PIN, OUTPUT);
-  pinMode(HOUR_SLEEP_PIN, OUTPUT);
-  pinMode(MINUTE_STEP_PIN, OUTPUT);
-  pinMode(MINUTE_SLEEP_PIN, OUTPUT);
+  pinMode(PIN_HOUR_STEP, OUTPUT);
+  pinMode(PIN_HOUR_SLEEP, OUTPUT);
+  pinMode(PIN_MINUTE_STEP, OUTPUT);
+  pinMode(PIN_MINUTE_SLEEP, OUTPUT);
 
-  digitalWrite(HOUR_STEP_PIN, LOW);
-  digitalWrite(HOUR_SLEEP_PIN, LOW);
-  digitalWrite(MINUTE_STEP_PIN, LOW);
-  digitalWrite(MINUTE_SLEEP_PIN, LOW);
+  digitalWrite(PIN_HOUR_STEP, LOW);
+  digitalWrite(PIN_HOUR_SLEEP, LOW);
+  digitalWrite(PIN_MINUTE_STEP, LOW);
+  digitalWrite(PIN_MINUTE_SLEEP, LOW);
 }
 
 void StepperDriver::step(bool hour, bool minute) {
@@ -17,10 +18,10 @@ void StepperDriver::step(bool hour, bool minute) {
     return;
 
   if(hour)
-    digitalWrite(HOUR_SLEEP_PIN, HIGH);
+    digitalWrite(PIN_HOUR_SLEEP, HIGH);
 
   if(minute)
-    digitalWrite(MINUTE_SLEEP_PIN, HIGH);
+    digitalWrite(PIN_MINUTE_SLEEP, HIGH);
 
   delayMicroseconds(2000);
 
@@ -32,24 +33,24 @@ void StepperDriver::step(bool hour, bool minute) {
     offset = (offset + 1) % 60;
 
     if(offset % 5 == 0) {
-      digitalWrite(MINUTE_STEP_PIN, HIGH);
+      digitalWrite(PIN_MINUTE_STEP, HIGH);
       delayMicroseconds(50);
-      digitalWrite(MINUTE_STEP_PIN, LOW);
+      digitalWrite(PIN_MINUTE_STEP, LOW);
       minute_steps--;
     }
 
     if(offset % 12 == 0) {
-      digitalWrite(HOUR_STEP_PIN, HIGH);
+      digitalWrite(PIN_HOUR_STEP, HIGH);
       delayMicroseconds(50);
-      digitalWrite(HOUR_STEP_PIN, LOW);
+      digitalWrite(PIN_HOUR_STEP, LOW);
       hour_steps--;
     }
 
     delayMicroseconds(30);
   }  
 
-  digitalWrite(HOUR_SLEEP_PIN, LOW);
-  digitalWrite(MINUTE_SLEEP_PIN, LOW);  
+  digitalWrite(PIN_HOUR_SLEEP, LOW);
+  digitalWrite(PIN_MINUTE_SLEEP, LOW);  
 }
 
 int StepperDriver::get_hour_step_count() {
@@ -75,29 +76,29 @@ int StepperDriver::get_minute_step_count() {
 }
 
 void StepperDriver::calibrate_hour(bool &cont) {
-  digitalWrite(HOUR_SLEEP_PIN, HIGH);
+  digitalWrite(PIN_HOUR_SLEEP, HIGH);
   delayMicroseconds(2000);
 
   while(cont) {
-      digitalWrite(HOUR_STEP_PIN, HIGH);
+      digitalWrite(PIN_HOUR_STEP, HIGH);
       delayMicroseconds(50);
-      digitalWrite(HOUR_STEP_PIN, LOW);
+      digitalWrite(PIN_HOUR_STEP, LOW);
       delayMicroseconds(1000);
   }
 
-  digitalWrite(HOUR_SLEEP_PIN, LOW);
+  digitalWrite(PIN_HOUR_SLEEP, LOW);
 }
 
 void StepperDriver::calibrate_minute(bool &cont) {
-  digitalWrite(MINUTE_SLEEP_PIN, HIGH);
+  digitalWrite(PIN_MINUTE_SLEEP, HIGH);
   delayMicroseconds(2000);
 
   while(cont) {
-      digitalWrite(MINUTE_STEP_PIN, HIGH);
+      digitalWrite(PIN_MINUTE_STEP, HIGH);
       delayMicroseconds(50);
-      digitalWrite(MINUTE_STEP_PIN, LOW);
+      digitalWrite(PIN_MINUTE_STEP, LOW);
       delayMicroseconds(1000);
   }
 
-  digitalWrite(MINUTE_SLEEP_PIN, LOW);
+  digitalWrite(PIN_MINUTE_SLEEP, LOW);
 }

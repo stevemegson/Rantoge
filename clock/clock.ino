@@ -1,5 +1,4 @@
-#define ENABLE_WIFI 1
-#define ENABLE_BUTTONS 1
+#include "settings.h"
 
 #if ENABLE_BUTTONS == 1
 #include <espasyncbutton.hpp>
@@ -22,8 +21,8 @@ ClockManager clock_manager;
 TimeZoneManager time_zone_manager;
 
 #if ENABLE_BUTTONS == 1
-AsyncEventButton left_button(GPIO_NUM_16, LOW);
-AsyncEventButton right_button(GPIO_NUM_17, LOW);
+AsyncEventButton left_button(PIN_LEFT_BUTTON, LOW);
+AsyncEventButton right_button(PIN_RIGHT_BUTTON, LOW);
 #endif
 
 #if ENABLE_WIFI == 1

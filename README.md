@@ -10,8 +10,8 @@ It expects these GPIO pins to be used:
 
 | Pin| Connection |
 | --- | --- |
-| 16 | Left button  |
-| 17 | Right button |
+| 26 | Left button  |
+| 23 | Right button |
 | 18 | Minutes STEP |
 | 19 | Minutes SLEEP |
 | 21 | Hours STEP |
