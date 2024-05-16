@@ -16,6 +16,6 @@
 #define PIN_MINUTE_SLEEP GPIO_NUM_19
 
 #define MICROSTEPPING_MULTIPLIER 32
-#define STEP_INTERVAL 30
+#define STEP_INTERVAL 15
 
 // ---------------------------------
