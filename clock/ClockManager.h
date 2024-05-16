@@ -16,6 +16,7 @@ class ClockManager {
 public:
   time_source_t time_source = NONE;
 
+  void begin();
   void tick();
   void start_ntp();
   void set_displayed_time(int hour, int minute);

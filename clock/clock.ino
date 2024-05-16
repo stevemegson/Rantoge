@@ -10,6 +10,11 @@
 #include "HTML.h"
 #endif
 
+#if ENABLE_OTA == 1
+#define ELEGANTOTA_USE_ASYNC_WEBSERVER 1
+#include <AsyncElegantOTA.h>
+#endif
+
 #if ENABLE_GPS == 1
 #include "GPS.h"
 #endif
@@ -50,17 +55,22 @@ void setup() {
 #endif
 
   clock_manager.set_logger(send_message);
+  clock_manager.begin();
 
 #if ENABLE_WIFI == 1
   wifi_manager.begin();
   wifi_manager.start_mdns("clock");
 
   start_server();
-#endif  
+#endif
 
 #if ENABLE_WIFI == 1 && ENABLE_SNTP == 1
   clock_manager.start_ntp(); 
 #endif
+
+  if(clock_manager.time_source == NONE) {
+    clock_manager.set_current_time(0,0,0);
+  }
 
   time_zone_manager.set_logger(send_message);
   time_zone_manager.begin(&clock_manager);
@@ -196,6 +206,10 @@ void start_server() {
     client->send("Connected", NULL, millis(), 500);
   });
   server.addHandler(&events);
+
+# if ENABLE_OTA == 1
+  AsyncElegantOTA.begin(&server);
+# endif
 
   server.begin();
 }
