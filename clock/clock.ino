@@ -10,6 +10,11 @@
 #include "HTML.h"
 #endif
 
+#if ENABLE_OTA == 1
+#define ELEGANTOTA_USE_ASYNC_WEBSERVER 1
+#include <AsyncElegantOTA.h>
+#endif
+
 #include <Preferences.h>
 #include <time.h>
 #include <sys/time.h>
@@ -184,6 +189,10 @@ void start_server() {
     client->send("Connected", NULL, millis(), 500);
   });
   server.addHandler(&events);
+
+# if ENABLE_OTA == 1
+  AsyncElegantOTA.begin(&server);
+# endif
 
   server.begin();
 }
