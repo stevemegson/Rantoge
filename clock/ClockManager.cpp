@@ -1,6 +1,7 @@
 #include <Arduino.h>
 
 #include "ClockManager.h"
+#include "settings.h"
 
 void ClockManager::begin() {
   _stepper.begin();
@@ -18,7 +19,7 @@ void ClockManager::start_ntp() {
   time_source = SNTP;
 
   log_current_time();
-  set_displayed_time(timeinfo.tm_hour, timeinfo.tm_min);
+  set_displayed_time_to_current();
   _state = RUN;
 }
 
@@ -84,6 +85,24 @@ void ClockManager::set_displayed_time(int hour, int minute) {
   _displayedMinute = minute;
 
   (*_logger)("Set displayed time to %02d:%02d\n", _displayedHour, _displayedMinute);
+}
+
+void ClockManager::set_displayed_time_to_current() {
+  struct tm timeinfo;
+  time_t now = time(0);
+  localtime_r(&now, &timeinfo);
+  int currentHour = timeinfo.tm_hour;
+  int currentMinute = timeinfo.tm_min;
+
+#if SIMULATE_12_HOUR == 1
+  if (currentHour == 0) {
+    currentHour = 12;
+  } else if (currentHour > 12) {
+    currentHour -= 12;
+  }
+#endif
+
+  set_displayed_time(currentHour, currentMinute);
 }
 
 void ClockManager::adjust_displayed_hour(int count) {
@@ -153,6 +172,14 @@ void ClockManager::sync_to_current_time() {
   int currentHour = timeinfo.tm_hour;
   int currentMinute = timeinfo.tm_min;
 
+#if SIMULATE_12_HOUR == 1
+  if (currentHour == 0) {
+    currentHour = 12;
+  } else if (currentHour > 12) {
+    currentHour -= 12;
+  }
+#endif
+
   if (currentHour == _displayedHour && currentMinute == _displayedMinute) {
     return;
   }
@@ -171,6 +198,10 @@ void ClockManager::sync_to_current_time() {
 
   if (offsetMinute > 50) {
     offsetMinute = 0;
+  }
+
+  if(offsetHour == 23 && currentMinute >= 50) {
+    offsetHour = 0;
   }
 
   if(offsetHour == 0 && offsetMinute == 0) {

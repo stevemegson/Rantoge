@@ -26,9 +26,7 @@ void TimeZoneManager::begin(ClockManager *clock) {
     }
   }
 
-  struct tm timeinfo;
-  getLocalTime(&timeinfo);
-  clock->set_displayed_time(timeinfo.tm_hour, timeinfo.tm_min);
+  clock->set_displayed_time_to_current();
 }
 
 void TimeZoneManager::set(String tz) {

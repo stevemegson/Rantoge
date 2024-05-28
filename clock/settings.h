@@ -20,6 +20,10 @@
 #define MICROSTEPPING_MULTIPLIER 32
 #define STEP_INTERVAL 15
 
+// ---- OPTIONS --------------------
+
+#define SIMULATE_12_HOUR 0
+
 // ---------------------------------
 
 #define GPS_HARDWARE_SERIAL 2 // TX 17, RX 16

@@ -222,21 +222,26 @@ void start_buttons() {
   left_button.begin();
 
   left_button.onLongPress([]() {
+    send_message("Left long press");
     clock_manager.request_calibrate_hour();
   });
 
   left_button.onLongRelease([]() {
+    send_message("Left long release");
     clock_manager.request_end_calibrate();
   });
 
   left_button.onClick([]() {
+    send_message("Left click");
     clock_manager.increment_hour();
   });
 
   left_button.onMultiClick([](int32_t counter) {
     if (counter == 2) {
+      send_message("Left double click");
       clock_manager.decrement_hour();
     } else if (counter == 3) {
+      send_message("Left triple click");
       clock_manager.toggle_demo();
     }
   });
@@ -246,21 +251,26 @@ void start_buttons() {
   right_button.begin();
 
   right_button.onLongPress([]() {
+    send_message("Right long press");
     clock_manager.request_calibrate_minute();
   });
 
   right_button.onLongRelease([]() {
+    send_message("Right long release");
     clock_manager.request_end_calibrate();
   });
 
   right_button.onClick([]() {
+    send_message("Right click");
     clock_manager.increment_minute();
   });
 
   right_button.onMultiClick([](int32_t counter) {
     if (counter == 2) {
+      send_message("Right double click");
       clock_manager.decrement_minute();
     } else if (counter == 3) {
+      send_message("Right triple click");
       clock_manager.request_set_minutes();
     }
   });

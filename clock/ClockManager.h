@@ -22,6 +22,7 @@ public:
   void set_displayed_time(int hour, int minute);
   void set_current_time(int hour, int minute, int second);
   void set_current_date(int day, int month, int year);
+  void set_displayed_time_to_current();
   void toggle_demo();
 
   void set_logger(logger_cb_t logger) {
