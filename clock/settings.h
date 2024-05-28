@@ -18,4 +18,8 @@
 #define MICROSTEPPING_MULTIPLIER 32
 #define STEP_INTERVAL 15
 
+// ---- OPTIONS --------------------
+
+#define SIMULATE_12_HOUR 0
+
 // ---------------------------------

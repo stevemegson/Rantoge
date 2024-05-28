@@ -32,6 +32,7 @@ Features can be enabled and disabled in `settings.h` to avoid installing librari
 - `#define ENABLE_SNTP 0` to disable SNTP time syncing without disabling wifi completely
 - `#define ENABLE_BUTTONS 0` to remove all button handling
 - `#define ENABLE_OTA 0` to disable the ElegantOTA update page
+- `#define SIMULATE_12_HOUR 1` to display 12 hour time on a 24 hour clock
 
 With OTA enabled, new firmware can be uploaded to http://clock.local/update 
 
@@ -77,6 +78,6 @@ PIN mapping and stepper parameters can also be set.
 - [x] Toggle demo mode through config page
 - [ ] If displayed time is fast by one hour and current minute is after 50, wait for the current time to catch up rather than advancing by 23 hours.
 - [ ] Support 12 hour cams
-- [ ] Support 12 hour display with 24 hour cams
+- [x] Support 12 hour display with 24 hour cams
 - [ ] Get current time from GPS with a Neo 6M module *(it's just so easy to add silly things to your AliExpress order)*
 - [ ] Get current time from radio time signals - DCF77, MSF, WWVB *(...it's really really easy to add things to your order)*
