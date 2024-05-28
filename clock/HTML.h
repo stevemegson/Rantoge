@@ -153,6 +153,13 @@ const char CONFIG_HTML[] = R"---(
                 </form>
             </div>
 
+            <div class="card">
+                <h2>Demo</h2>
+                <form action="/toggle-demo" method="post">
+                    <p><input type="submit" value="Toggle" /></p>
+                </form>
+            </div>
+
             <div class="log">
                 <h2>Messages</h2>
                 <pre id="log-messages"></pre>

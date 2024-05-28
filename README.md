@@ -74,9 +74,9 @@ PIN mapping and stepper parameters can also be set.
 ![config page](./config-page.png)
 
 ## Things to do
-- Toggle demo mode through config page
-- If displayed time is fast by one hour and current minute is after 50, wait for the current time to catch up rather than advancing by 23 hours.
-- Support 12 hour cams
-- Support 12 hour display with 24 hour cams
-- Get current time from GPS with a Neo 6M module *(it's just so easy to add silly things to your AliExpress order)*
-- Get current time from radio time signals - DCF77, MSF, WWVB *(...it's really really easy to add things to your order)*
+- [x] Toggle demo mode through config page
+- [ ] If displayed time is fast by one hour and current minute is after 50, wait for the current time to catch up rather than advancing by 23 hours.
+- [ ] Support 12 hour cams
+- [ ] Support 12 hour display with 24 hour cams
+- [ ] Get current time from GPS with a Neo 6M module *(it's just so easy to add silly things to your AliExpress order)*
+- [ ] Get current time from radio time signals - DCF77, MSF, WWVB *(...it's really really easy to add things to your order)*
