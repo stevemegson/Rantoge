@@ -200,6 +200,10 @@ void ClockManager::sync_to_current_time() {
     offsetMinute = 0;
   }
 
+  if(offsetHour == 23 && currentMinute >= 50) {
+    offsetHour = 0;
+  }
+
   if(offsetHour == 0 && offsetMinute == 0) {
     return;
   }
