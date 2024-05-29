@@ -15,6 +15,10 @@
 #include <AsyncElegantOTA.h>
 #endif
 
+#if ENABLE_GPS == 1
+#include "GPS.h"
+#endif
+
 #include <Preferences.h>
 #include <time.h>
 #include <sys/time.h>
@@ -36,7 +40,11 @@ AsyncEventSource events("/events");
 WifiManager wifi_manager;
 #endif
 
-typedef void (*logger_cb_t)(const char *format, ...);
+#if ENABLE_GPS == 1
+GpsTimeSource gps(&clock_manager);
+#endif
+
+typedef void (*logger_cb_t) (const char * format, ...);
 
 void setup() {
   Serial.begin(115200);
@@ -66,10 +74,19 @@ void setup() {
 
   time_zone_manager.set_logger(send_message);
   time_zone_manager.begin(&clock_manager);
+
+#if ENABLE_GPS == 1
+  gps.begin();
+#endif  
 }
 
 void loop() {
+#if ENABLE_GPS == 1
+  gps.tick();
+#endif
+
   clock_manager.tick();
+
   delay(1000);
 }
 

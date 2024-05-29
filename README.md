@@ -32,19 +32,20 @@ Features can be enabled and disabled in `settings.h` to avoid installing librari
 - `#define ENABLE_SNTP 0` to disable SNTP time syncing without disabling wifi completely
 - `#define ENABLE_BUTTONS 0` to remove all button handling
 - `#define ENABLE_OTA 0` to disable the ElegantOTA update page
-- `#define SIMULATE_12_HOUR 1` to display 12 hour time on a 24 hour clock
 
 With OTA enabled, new firmware can be uploaded to http://clock.local/update 
 
 PIN mapping and stepper parameters can also be set.
 - `#define MICROSTEPPING_MULTIPLIER 32` indicates that the stepper drivers are set for 1/32 microstepping.
 - `#define STEP_INTERVAL 15` waits 15 microseconds after each loop of the stepping code. Lower numbers move the digits faster.
+- `#define SIMULATE_12_HOUR 1` to display 12 hour time on a 24 hour clock
 
 ## Libraries
 - ESPAsyncWebServer (for ENABLE_WIFI)
 - AsyncTCP (for ENABLE_WIFI)
 - ESPAsyncButton (for ENABLE_BUTTONS)
 - AsyncElegantOTA (for ENABLE_OTA)
+- TinyGPSPlus (for ENABLE_GPS)
 
 ## Configuration
 
@@ -57,6 +58,8 @@ PIN mapping and stepper parameters can also be set.
 ### Wi-fi but no internet
 - If you don't have a wi-fi network available for the clock to connect to the internet, you can set the current time and time zone though the config page.
 - The ESP32 uses [POSIX time zone strings](https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv). The firmware also understands tzdata time zone names, which it converts to a POSIX equivalent. 
+
+![config page](./config-page.png)
 
 ### Buttons
 - The left and right buttons control hours and minutes:
@@ -72,12 +75,14 @@ PIN mapping and stepper parameters can also be set.
 - (There is no need for an equivalent process for hours - the clock doesn't need to know what hour it is displaying.)
 
 
-![config page](./config-page.png)
+### GPS
+- Add `#define ENABLE_GPS 1` to settings.h to add support for reading the time from a NEO-6M GPS module (or probably anything that uses the NMEA protocol).
+- The settings `GPS_HARDWARE_SERIAL` and `GPS_BAUD` set the pins and speed for the serial connection to the module. The default hardware serial 2 has RX on pin 17 and TX on pin 17.
 
 ## Things to do
 - [x] Toggle demo mode through config page
 - [x] If displayed time is fast by one hour and current minute is after 50, wait for the current time to catch up rather than advancing by 23 hours.
 - [ ] Support 12 hour cams
 - [x] Support 12 hour display with 24 hour cams
-- [ ] Get current time from GPS with a Neo 6M module *(it's just so easy to add silly things to your AliExpress order)*
+- [x] Get current time from GPS with a Neo 6M module *(it's just so easy to add silly things to your AliExpress order)*
 - [ ] Get current time from radio time signals - DCF77, MSF, WWVB *(...it's really really easy to add things to your order)*

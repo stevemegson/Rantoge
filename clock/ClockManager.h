@@ -9,7 +9,8 @@ enum time_source_t {
   NONE,
   SNTP,
   WEB,
-  BUTTONS
+  BUTTONS,
+  GPS
 };
 
 class ClockManager {
