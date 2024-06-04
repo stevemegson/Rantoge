@@ -87,7 +87,7 @@ void loop() {
 
   clock_manager.tick();
 
-  delay(1000);
+  delay(100);
 }
 
 void send_message(const char *format, ...) {

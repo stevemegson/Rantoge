@@ -5,6 +5,7 @@
 
 void ClockManager::begin() {
   _stepper.begin();
+  _seconds_display.begin();
 }
 
 void ClockManager::start_ntp() {
@@ -171,6 +172,7 @@ void ClockManager::sync_to_current_time() {
 
   int currentHour = timeinfo.tm_hour;
   int currentMinute = timeinfo.tm_min;
+  int currentSecond = timeinfo.tm_sec;
 
 #if SIMULATE_12_HOUR == 1
   if (currentHour == 0) {
@@ -179,6 +181,8 @@ void ClockManager::sync_to_current_time() {
     currentHour -= 12;
   }
 #endif
+
+  _seconds_display.update(currentMinute, currentSecond);
 
   if (currentHour == _displayedHour && currentMinute == _displayedMinute) {
     return;

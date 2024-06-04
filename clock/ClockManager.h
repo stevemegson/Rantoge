@@ -2,6 +2,7 @@
 #define CLOCKMANAGER_H
 
 #include "StepperDriver.h"
+#include "SecondsDisplay.h"
 
 typedef void (*logger_cb_t)(const char* format, ...);
 
@@ -84,6 +85,7 @@ private:
   bool _flagZeroMinute;
 
   StepperDriver _stepper;
+  SecondsDisplay _seconds_display;
   logger_cb_t _logger;
 
   void sync_to_current_time();
