@@ -5,7 +5,7 @@ void SecondsDisplay::begin() {
   tft.fillScreen(BACKGROUND_COLOR);
 }
 
-void SecondsDisplay::update(int currentMinute, int currentSecond) {
+void SecondsDisplay::update(int currentMinute, int currentSecond, bool waiting) {
   if (currentMinute != lastMinute && currentSecond > 0) {
     lastMinute = currentMinute;
     tft.drawSmoothArc(arcCenterX, arcCenterY, arcRadius, arcInnerRadius, 0, 360, BACKGROUND_COLOR, BACKGROUND_COLOR, false);
@@ -13,9 +13,20 @@ void SecondsDisplay::update(int currentMinute, int currentSecond) {
 
   if (lastSecond != currentSecond) {
     lastSecond = currentSecond;
-    tft.drawSmoothArc(arcCenterX, arcCenterY, arcRadius, arcInnerRadius, 180, (currentSecond * 6 + 180) % 360, ARC_COLOR, BACKGROUND_COLOR, true);
+    tft.drawSmoothArc(arcCenterX, arcCenterY, arcRadius, arcInnerRadius, 180, (currentSecond * 6 + 180) % 360, waiting ? WAIT_COLOR : ARC_COLOR, BACKGROUND_COLOR, true);
     draw7Number(currentSecond, digitX, digitY, digitSize, DIGIT_COLOR, BACKGROUND_COLOR, 2);
   }
+}
+
+void SecondsDisplay::show_progress(int progress) {
+  if(lastMinute != -1 || progress < lastProgress) {
+    lastMinute = -1;
+    lastSecond = -1;
+    tft.fillScreen(BACKGROUND_COLOR);
+  }
+
+  lastProgress = progress;
+  tft.drawSmoothArc(arcCenterX, arcCenterY, arcRadius, arcInnerRadius, 180, (int)(progress + 180) % 360, PROGRESS_COLOR, BACKGROUND_COLOR, true);
 }
 
 // by William Zaggle, https://forum.arduino.cc/t/fast-7-segment-number-display-for-tft/296619

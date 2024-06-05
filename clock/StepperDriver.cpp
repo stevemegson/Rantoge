@@ -13,7 +13,7 @@ void StepperDriver::begin() {
   digitalWrite(PIN_MINUTE_SLEEP, LOW);
 }
 
-void StepperDriver::step(bool hour, bool minute) {
+void StepperDriver::step(bool hour, bool minute, int stepsDone, int stepGroup) {
   if(!hour && !minute)
     return;
 
@@ -28,7 +28,10 @@ void StepperDriver::step(bool hour, bool minute) {
   int hour_steps = hour ? get_hour_step_count() : 0;
   int minute_steps = minute ? get_minute_step_count() : 0;
 
+  int step_target = hour_steps > minute_steps ? hour_steps : minute_steps; 
+
   int offset = 0;
+  int last_progress = -360;
   while(hour_steps > 0 || minute_steps > 0) {
     offset = (offset + 1) % 60;
 
@@ -46,8 +49,18 @@ void StepperDriver::step(bool hour, bool minute) {
       hour_steps--;
     }
 
-    delayMicroseconds(STEP_INTERVAL);
-  }  
+    if(offset == 0) {
+      int steps_remaining = hour_steps > minute_steps ? hour_steps : minute_steps;
+      int progress = (360 * ((step_target - steps_remaining) + (stepsDone * step_target))) / (stepGroup * step_target);
+
+      if(progress >= last_progress + 3 && progress > 0) {
+        last_progress = progress;
+        _seconds_display->show_progress(progress);
+      }
+    }
+    
+    delayMicroseconds(STEP_INTERVAL);    
+  }
 
   digitalWrite(PIN_HOUR_SLEEP, LOW);
   digitalWrite(PIN_MINUTE_SLEEP, LOW);  

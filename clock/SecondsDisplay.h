@@ -8,16 +8,20 @@
 #define BACKGROUND_COLOR TFT_BLACK
 #define DIGIT_COLOR TFT_WHITE
 #define ARC_COLOR TFT_GOLD
+#define PROGRESS_COLOR TFT_GREEN
+#define WAIT_COLOR TFT_RED
 
 class SecondsDisplay {
 public:
   void begin();
-  void update(int currentMinute, int currentSecond);
+  void update(int currentMinute, int currentSecond, bool waiting = false);
+  void show_progress(int percent);
 
 private:
   TFT_eSPI tft = TFT_eSPI();
   int lastMinute = 0;
   int lastSecond = 0;
+  int lastProgress = 360;
 
   void draw7Number(int n, unsigned int xLoc, unsigned int yLoc, char cS, unsigned int fC, unsigned int bC, char nD);
 };

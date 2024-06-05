@@ -6,6 +6,8 @@
 void ClockManager::begin() {
   _stepper.begin();
   _seconds_display.begin();
+
+  _stepper.set_seconds_display(&_seconds_display);
 }
 
 void ClockManager::start_ntp() {
@@ -53,7 +55,8 @@ void ClockManager::tick() {
     _stepper.step(true, true);
     delay(500);
     _stepper.step(false, true);
-
+    delay(500);
+    
     adjust_displayed_hour(2);
     adjust_displayed_minute(2);
 
@@ -182,11 +185,7 @@ void ClockManager::sync_to_current_time() {
   }
 #endif
 
-  _seconds_display.update(currentMinute, currentSecond);
-
-  if (currentHour == _displayedHour && currentMinute == _displayedMinute) {
-    return;
-  }
+  bool waiting = false;
 
   int offsetHour = currentHour - _displayedHour;
   if (offsetHour < 0)
@@ -202,17 +201,24 @@ void ClockManager::sync_to_current_time() {
 
   if (offsetMinute > 50) {
     offsetMinute = 0;
+    waiting = true;
   }
 
   if(offsetHour == 23 && currentMinute >= 50) {
     offsetHour = 0;
+    waiting = true;
   }
+
+  _seconds_display.update(currentMinute, currentSecond, waiting);
 
   if(offsetHour == 0 && offsetMinute == 0) {
     return;
   }
 
   (*_logger)("%02d:%02d -> %02d:%02d", _displayedHour, _displayedMinute, currentHour, currentMinute);
+
+  int stepGroup = offsetHour > offsetMinute ? offsetHour : offsetMinute;
+  int stepsDone = 0;
 
   while (offsetHour > 0 && offsetMinute > 0) {
     (*_logger)("  Advance hour and minute");
@@ -221,7 +227,8 @@ void ClockManager::sync_to_current_time() {
     offsetMinute--;
     adjust_displayed_minute(1);
 
-    _stepper.step(true, true);
+    _stepper.step(true, true, stepsDone, stepGroup);
+    ++stepsDone;
   }
 
   while (offsetHour > 0) {
@@ -229,7 +236,8 @@ void ClockManager::sync_to_current_time() {
     offsetHour--;
     adjust_displayed_hour(1);
 
-    _stepper.step(true, false);
+    _stepper.step(true, false, stepsDone, stepGroup);
+    ++stepsDone;
   }
 
   while (offsetMinute > 0) {
@@ -237,7 +245,8 @@ void ClockManager::sync_to_current_time() {
     offsetMinute--;
     adjust_displayed_minute(1);
 
-    _stepper.step(false, true);
+    _stepper.step(false, true, stepsDone, stepGroup);
+    ++stepsDone;
   }
 }
 
