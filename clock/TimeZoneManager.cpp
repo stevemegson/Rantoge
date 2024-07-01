@@ -3,6 +3,7 @@
 #include <HTTPClient.h>
 
 #include "TimeZoneManager.h"
+#include "settings.h"
 
 Preferences preferences;
 
