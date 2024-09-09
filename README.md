@@ -42,9 +42,11 @@ PIN mapping and stepper parameters can also be set.
 
 ## Libraries
 - ESPAsyncWebServer (for ENABLE_WIFI)
+	- Get the zip of the me-no-dev version from [github](https://github.com/me-no-dev/ESPAsyncWebServer/archive/refs/heads/master.zip) and use "Add ZIP library". The lacamera version available in the Arduino library manager isn't compatible with arduino-esp32 3.x.
+- ElegantOTA (for ENABLE_OTA)
+	- In `libraries/ElegantOTA/src/ElegantOTA.h`, edit line 27 to `#define ELEGANTOTA_USE_ASYNC_WEBSERVER 1`.
 - AsyncTCP (for ENABLE_WIFI)
 - ESPAsyncButton (for ENABLE_BUTTONS)
-- AsyncElegantOTA (for ENABLE_OTA)
 - TinyGPSPlus (for ENABLE_GPS)
 
 ## Configuration

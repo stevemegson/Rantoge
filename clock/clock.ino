@@ -11,8 +11,7 @@
 #endif
 
 #if ENABLE_OTA == 1
-#define ELEGANTOTA_USE_ASYNC_WEBSERVER 1
-#include <AsyncElegantOTA.h>
+#include <ElegantOTA.h>
 #endif
 
 #if ENABLE_GPS == 1
@@ -208,7 +207,7 @@ void start_server() {
   server.addHandler(&events);
 
 # if ENABLE_OTA == 1
-  AsyncElegantOTA.begin(&server);
+  ElegantOTA.begin(&server);
 # endif
 
   server.begin();

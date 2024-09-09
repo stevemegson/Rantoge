@@ -17,7 +17,6 @@ void WifiManager::begin() {
   WiFi.removeEvent(on_wifi_event);
 
   WiFi.disconnect();
-  WiFi.setAutoConnect(false);
   WiFi.setAutoReconnect(false);
 
   _preferences.begin("wifi", false);
