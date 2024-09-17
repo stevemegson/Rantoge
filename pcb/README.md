@@ -41,23 +41,22 @@ To microcontroller
 
 |Pin|Connection|
 |---|----------|
-|1|Left button|
-|2|Minute SLEEP|
-|3|Minute STEP|
-|4|Hour SLEEP|
-|5|Hour STEP|
-
+|1|Right button|
+|2|5V (see below)|
+|3|GND|
+|4|GND|
+|5|3.3V  in|
 
 ### P2
 To microcontroller
 
 |Pin|Connection|
 |---|----------|
-|1|Right button|
-|2|5V (see below)|
-|3|GND|
-|4|GND|
-|5|3.3V  in|
+|1|Left button|
+|2|Minute SLEEP|
+|3|Minute STEP|
+|4|Hour SLEEP|
+|5|Hour STEP|
 
 The board can be powered by providing 5V to pin 3 (but beware that the 5V pin on the microcontroller probably can't provide enough current - you'd need a separate power supply).
 Alternatively, it can be powered from the USB port and it will provide 5V on pin 3 to power the microcontroller.
