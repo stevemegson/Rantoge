@@ -11,8 +11,7 @@
 #endif
 
 #if ENABLE_OTA == 1
-#define ELEGANTOTA_USE_ASYNC_WEBSERVER 1
-#include <AsyncElegantOTA.h>
+#include "src/ElegantOTA/ElegantOTA.h"
 #endif
 
 #if ENABLE_GPS == 1
@@ -86,7 +85,8 @@ void loop() {
 #endif
 
   clock_manager.tick();
-
+  ElegantOTA.loop();
+  
   delay(100);
 }
 
@@ -203,12 +203,12 @@ void start_server() {
       Serial.printf("Client reconnected. Last message ID that it got is: %u\n", client->lastId());
     }
 
-    client->send("Connected", NULL, millis(), 500);
+    client->send("Client connected", NULL, millis(), 500);
   });
   server.addHandler(&events);
 
 # if ENABLE_OTA == 1
-  AsyncElegantOTA.begin(&server);
+  ElegantOTA.begin(&server);
 # endif
 
   server.begin();
