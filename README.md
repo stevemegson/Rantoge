@@ -18,6 +18,7 @@ It expects these GPIO pins to be used:
 | 19 | Minutes SLEEP |
 | 21 | Hours STEP |
 | 22 | Hours SLEEP |
+|  5 | Stepper driver type select |
 
 Buttons are active low (connected to ground when pressed).
 
@@ -26,7 +27,12 @@ I've used one of [these boards](https://www.aliexpress.com/item/1005006661851122
 It expects the DRV8825s to be configured for 1/32 microstepping (otherwise, change `MICROSTEPPING_MULTIPLIER`).
 
 ## Build settings
-Features can be enabled and disabled in `settings.h` to avoid installing libraries which you'll never use, and to reduce the compiled size.
+
+In `settings.h`
+
+- `#define DRIVER_TYPE DRV8825` selects the type of stepper driver from `DRV8825`, `TMC2208`, `A4988`
+
+Features can be enabled and disabled to avoid installing libraries which you'll never use, and to reduce the compiled size.
 
 - `#define ENABLE_WIFI 0` to remove the web interface and stop connecting to wifi
 - `#define ENABLE_SNTP 0` to disable SNTP time syncing without disabling wifi completely
@@ -36,15 +42,14 @@ Features can be enabled and disabled in `settings.h` to avoid installing librari
 With OTA enabled, new firmware can be uploaded to http://clock.local/update 
 
 PIN mapping and stepper parameters can also be set.
-- `#define MICROSTEPPING_MULTIPLIER 32` indicates that the stepper drivers are set for 1/32 microstepping.
-- `#define STEP_INTERVAL 15` waits 15 microseconds after each loop of the stepping code. Lower numbers move the digits faster.
+- `#define STEP_DELAY 15` waits 15 microseconds after each loop of the stepping code. Lower numbers move the 
+digits faster.
 - `#define SIMULATE_12_HOUR 1` to display 12 hour time on a 24 hour clock
+- `#define MICROSTEPPING_MULTIPLIER 32` indicates that the stepper drivers are set for 1/32 microstepping. A default value is set based on `DRIVER_TYPE`.
 
 ## Libraries
 - ESPAsyncWebServer (for ENABLE_WIFI)
 	- Get the zip of the me-no-dev version from [github](https://github.com/me-no-dev/ESPAsyncWebServer/archive/refs/heads/master.zip) and use "Add ZIP library". The lacamera version available in the Arduino library manager isn't compatible with arduino-esp32 3.x.
-- ElegantOTA (for ENABLE_OTA)
-	- In `libraries/ElegantOTA/src/ElegantOTA.h`, edit line 27 to `#define ELEGANTOTA_USE_ASYNC_WEBSERVER 1`.
 - AsyncTCP (for ENABLE_WIFI)
 - ESPAsyncButton (for ENABLE_BUTTONS)
 - TinyGPSPlus (for ENABLE_GPS)
