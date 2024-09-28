@@ -89,9 +89,12 @@ void loop() {
 #endif
 
   clock_manager.tick();
+
+#if ENABLE_OTA == 1  
   ElegantOTA.loop();
+#endif  
   
-  delay(1000);
+  delay(100);
 }
 
 void send_message(const char *format, ...) {

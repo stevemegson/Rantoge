@@ -1,7 +1,12 @@
 #ifndef CLOCKMANAGER_H
 #define CLOCKMANAGER_H
 
+#include "settings.h"
 #include "StepperDriver.h"
+
+#if ENABLE_TFT == 1
+#include "SecondsDisplay.h"
+#endif
 
 typedef void (*logger_cb_t)(const char* format, ...);
 
@@ -84,6 +89,11 @@ private:
   bool _flagZeroMinute;
 
   StepperDriver _stepper;
+
+#if ENABLE_TFT == 1  
+  SecondsDisplay _seconds_display;
+#endif
+
   logger_cb_t _logger;
 
   void sync_to_current_time();
