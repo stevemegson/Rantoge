@@ -58,6 +58,7 @@ void StepperDriver::step(bool hour, bool minute, int stepsDone, int stepGroup) {
       hour_steps--;
     }
 
+#if ENABLE_TFT == 1
     if(offset == 0) {
       int steps_remaining = hour_steps > minute_steps ? hour_steps : minute_steps;
       int progress = (360 * ((step_target - steps_remaining) + (stepsDone * step_target))) / (stepGroup * step_target);
@@ -67,6 +68,7 @@ void StepperDriver::step(bool hour, bool minute, int stepsDone, int stepGroup) {
         _seconds_display->show_progress(progress);
       }
     }
+#endif    
     
     delayMicroseconds(STEP_INTERVAL);    
   }

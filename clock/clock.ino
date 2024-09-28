@@ -85,7 +85,10 @@ void loop() {
 #endif
 
   clock_manager.tick();
+
+#if ENABLE_OTA == 1  
   ElegantOTA.loop();
+#endif  
   
   delay(100);
 }

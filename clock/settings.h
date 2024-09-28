@@ -1,9 +1,13 @@
+#ifndef SETTINGS_H
+#define SETTINGS_H
+
 // ---- FEATURES -------------------
 #define ENABLE_WIFI 1
 #define ENABLE_SNTP 1
 #define ENABLE_BUTTONS 1
 #define ENABLE_OTA 1
 #define ENABLE_GPS 0
+#define ENABLE_TFT 0
 
 // ---- PIN MAPPING ----------------
 #if CONFIG_IDF_TARGET_ESP32
@@ -46,3 +50,5 @@
 
 // ---------------------------------
 const int STEP_INTERVAL = STEP_DELAY * 32 / MICROSTEPPING_MULTIPLIER;
+
+#endif

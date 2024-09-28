@@ -1,13 +1,13 @@
 #include <Arduino.h>
 
 #include "ClockManager.h"
-#include "settings.h"
 
 void ClockManager::begin() {
   _stepper.begin();
+#if ENABLE_TFT == 1
   _seconds_display.begin();
-
   _stepper.set_seconds_display(&_seconds_display);
+#endif
 }
 
 void ClockManager::start_ntp() {
@@ -209,7 +209,9 @@ void ClockManager::sync_to_current_time() {
     waiting = true;
   }
 
+#if ENABLE_TFT == 1
   _seconds_display.update(currentMinute, currentSecond, waiting);
+#endif
 
   if(offsetHour == 0 && offsetMinute == 0) {
     return;

@@ -2,7 +2,11 @@
 #define STEPPERDRIVER_H
 
 #include <Arduino.h>
+#include "settings.h"
+
+#if ENABLE_TFT == 1
 #include "SecondsDisplay.h"
+#endif
 
 class StepperDriver {
 public:
@@ -14,16 +18,19 @@ public:
   void step_minute(int steps);
   void calibrate_hour(bool &cont);
   void calibrate_minute(bool &cont);
-
+#if ENABLE_TFT == 1
   void set_seconds_display(SecondsDisplay *seconds) {
     _seconds_display = seconds;
   }
+#endif
 
 private:
   int get_hour_step_count();
   int get_minute_step_count();
+
+#if ENABLE_TFT == 1
   SecondsDisplay *_seconds_display;
-  
+#endif  
 };
 
 #endif
