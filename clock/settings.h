@@ -33,6 +33,17 @@
 
 #elif CONFIG_IDF_TARGET_ESP32C3
 
+  #define PIN_DRV8825      GPIO_NUM_7
+
+  #define PIN_LEFT_BUTTON  GPIO_NUM_1
+  #define PIN_RIGHT_BUTTON GPIO_NUM_0
+  #define PIN_THIRD_BUTTON GPIO_NUM_6
+
+  #define PIN_HOUR_STEP    GPIO_NUM_5
+  #define PIN_HOUR_SLEEP   GPIO_NUM_4
+  #define PIN_MINUTE_STEP  GPIO_NUM_3
+  #define PIN_MINUTE_SLEEP GPIO_NUM_2
+
 #endif
 
 // ---- OPTIONS --------------------

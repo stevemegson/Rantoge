@@ -31,6 +31,10 @@ TimeZoneManager time_zone_manager;
 #if ENABLE_BUTTONS == 1
 AsyncEventButton left_button(PIN_LEFT_BUTTON, LOW);
 AsyncEventButton right_button(PIN_RIGHT_BUTTON, LOW);
+
+#ifdef PIN_THIRD_BUTTON
+AsyncEventButton third_button(PIN_THIRD_BUTTON, LOW);
+#endif
 #endif
 
 #if ENABLE_WIFI == 1
@@ -276,5 +280,16 @@ void start_buttons() {
   });
 
   right_button.enable();
+
+#ifdef PIN_THIRD_BUTTON
+  third_button.begin();
+
+  third_button.onClick([]() {
+    send_message("Third click");
+  });
+
+  third_button.enable();
+#endif
+
 }
 #endif
