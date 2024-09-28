@@ -27,6 +27,7 @@ void WifiManager::begin() {
   if (ssid != "" && password != ""){
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid.c_str(), password.c_str());
+    WiFi.setTxPower(WIFI_POWER_8_5dBm);
     Serial.print("Connecting to WiFi ..");
     
     byte retries = 0;
@@ -49,6 +50,8 @@ void WifiManager::begin() {
   WiFi.mode(WIFI_AP);
   boolean result = WiFi.softAP("clock", NULL);
   if (result == true) {
+    WiFi.setTxPower(WIFI_POWER_8_5dBm);
+
     Serial.println("AP created");
     Serial.print("   IP address: ");
     Serial.println(WiFi.softAPIP());
