@@ -8,6 +8,7 @@
 #define ENABLE_OTA 1
 #define ENABLE_GPS 0
 #define ENABLE_TFT 0
+#define ENABLE_RGB 1
 
 // ---- PIN MAPPING ----------------
 #if CONFIG_IDF_TARGET_ESP32
@@ -35,6 +36,8 @@
   #define PIN_MINUTE_STEP  GPIO_NUM_4
   #define PIN_MINUTE_SLEEP GPIO_NUM_3
 
+  #define PIN_RGB          GPIO_NUM_21
+
 #elif CONFIG_IDF_TARGET_ESP32C3
 
   #define PIN_DRV8825      GPIO_NUM_7
@@ -48,6 +51,7 @@
   #define PIN_MINUTE_STEP  GPIO_NUM_3
   #define PIN_MINUTE_SLEEP GPIO_NUM_2
 
+  #define PIN_RGB          GPIO_NUM_0
 #endif
 
 // ---- OPTIONS --------------------
@@ -61,5 +65,7 @@
 
 // ---------------------------------
 const int STEP_INTERVAL = STEP_DELAY * 32 / MICROSTEPPING_MULTIPLIER;
+
+void set_rgb(uint8_t r, uint8_t g, uint8_t b);
 
 #endif

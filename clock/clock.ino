@@ -1,5 +1,11 @@
 #include "settings.h"
 
+void set_rgb(uint8_t r, uint8_t g, uint8_t b) {
+#ifdef PIN_RGB
+  neopixelWrite(PIN_RGB, r * RGB_BRIGHTNESS / 255, g * RGB_BRIGHTNESS / 255, b * RGB_BRIGHTNESS / 255);
+#endif
+}
+
 #if ENABLE_BUTTONS == 1
 #include <espasyncbutton.hpp>
 #endif

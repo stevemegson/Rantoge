@@ -21,6 +21,8 @@ void ClockManager::start_ntp() {
 
   time_source = SNTP;
 
+  set_rgb(0,255,0);
+
   log_current_time();
   set_displayed_time_to_current();
   _state = RUN;
@@ -29,22 +31,26 @@ void ClockManager::start_ntp() {
 void ClockManager::tick() {
   if (_state == CALIBRATE_HOUR) {
     (*_logger)("Calibrate hour");
+    set_rgb(255, 0, 255);
 
     _calibrating = true;
     _stepper.calibrate_hour(_calibrating);
 
     (*_logger)("Calibration done");
+    set_rgb(0, 0, 0);
 
     return;
   }
 
   if (_state == CALIBRATE_MINUTE) {
     (*_logger)("Calibrate minute");
+    set_rgb(255, 0, 255);
 
     _calibrating = true;
     _stepper.calibrate_minute(_calibrating);
 
     (*_logger)("Calibration done");
+    set_rgb(0, 0, 0);
 
     return;
   }
@@ -63,8 +69,10 @@ void ClockManager::tick() {
     return;
   }
 
-  if (_state == SET_MINUTES) {
+  if (_state == SET_MINUTES) {    
+    set_rgb(0, 255, 0);
     set_minutes();
+    set_rgb(0, 0, 0);
     _state = RUN;
 
     return;
@@ -77,9 +85,11 @@ void ClockManager::toggle_demo() {
   _calibrating = false;
   if (_state == DEMO) {
     (*_logger)("End demo");
+    set_rgb(0, 0, 0);
     _state = RUN;
   } else {
     (*_logger)("Start demo");
+    set_rgb(0, 255, 255);
     _state = DEMO;
   }
 }
@@ -213,9 +223,15 @@ void ClockManager::sync_to_current_time() {
   _seconds_display.update(currentMinute, currentSecond, waiting);
 #endif
 
+  if(waiting) {
+      set_rgb(255,0,0);
+  }
+
   if(offsetHour == 0 && offsetMinute == 0) {
     return;
   }
+
+  set_rgb(0,0,0);
 
   (*_logger)("%02d:%02d -> %02d:%02d", _displayedHour, _displayedMinute, currentHour, currentMinute);
 

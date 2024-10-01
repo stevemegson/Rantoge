@@ -1,6 +1,7 @@
 #include "WifiManager.h"
 #include <WiFi.h>
 #include <ESPmDNS.h>
+#include "settings.h"
 
 void on_wifi_event(WiFiEvent_t event) {
 	switch (event) {
@@ -25,6 +26,7 @@ void WifiManager::begin() {
   _preferences.end();
 
   if (ssid != "" && password != ""){
+    set_rgb(255,128,0);
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid.c_str(), password.c_str());
     WiFi.setTxPower(WIFI_POWER_8_5dBm);
@@ -37,6 +39,8 @@ void WifiManager::begin() {
     }
 
     if(WiFi.status()== WL_CONNECTED) {
+      set_rgb(255,255,0);
+
       Serial.println("connected");
       Serial.print("   IP address: ");
       Serial.println(WiFi.localIP());
@@ -52,11 +56,14 @@ void WifiManager::begin() {
   if (result == true) {
     WiFi.setTxPower(WIFI_POWER_8_5dBm);
 
+    set_rgb(0, 0, 255);
+
     Serial.println("AP created");
     Serial.print("   IP address: ");
     Serial.println(WiFi.softAPIP());
   }
   else {
+    set_rgb(255,0,0);
     Serial.println("AP failed");
   }
 }
