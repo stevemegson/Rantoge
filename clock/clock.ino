@@ -297,6 +297,22 @@ void start_buttons() {
     send_message("Third click");
   });
 
+  third_button.onLongPress([]() {
+    send_message("Third long press");
+  });
+
+  third_button.onLongRelease([]() {
+    send_message("Third long release");
+    clock_manager.request_set_minutes();
+  });
+
+  third_button.onMultiClick([](int32_t counter) {
+    if (counter == 2) {
+      send_message("Third double click");
+      clock_manager.toggle_demo();
+    }
+  });
+
   third_button.enable();
 #endif
 
