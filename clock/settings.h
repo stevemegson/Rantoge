@@ -51,12 +51,11 @@
   #define PIN_MINUTE_STEP  GPIO_NUM_3
   #define PIN_MINUTE_SLEEP GPIO_NUM_2
 
-  #define PIN_RGB          GPIO_NUM_0
+  #define PIN_RGB          GPIO_NUM_10
 #endif
 
 // ---- OPTIONS --------------------
 #define USE_TMC2208 0
-#define SIMULATE_12_HOUR 0
 #define STEP_DELAY 15
 #define MICROSTEPPING_MULTIPLIER 32
 

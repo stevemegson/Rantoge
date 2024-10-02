@@ -100,7 +100,11 @@ void loop() {
   ElegantOTA.loop();
 #endif  
   
+#if ENABLE_TFT == 1  
   delay(100);
+#else
+  delay(1000);
+#endif
 }
 
 void send_message(const char *format, ...) {
@@ -210,6 +214,16 @@ void start_server() {
     clock_manager.toggle_demo();
     request->send_P(200, "text/plain", "OK");
   });
+
+  server.on("/set-mode", HTTP_POST, [](AsyncWebServerRequest *request) {
+    if (request->hasParam("m")) {
+      int mode = request->getParam("m")->value().toInt();
+      clock_manager.set_mode((clock_mode_t)mode);
+
+      request->send_P(200, "text/plain", "OK");
+    } else {
+      request->send_P(400, "text/plain", "Missing parameters");
+    }  });
 
   events.onConnect([](AsyncEventSourceClient *client) {
     if (client->lastId()) {

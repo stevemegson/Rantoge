@@ -44,7 +44,6 @@ With OTA enabled, new firmware can be uploaded to http://clock.local/update
 PIN mapping and stepper parameters can also be set.
 - `#define STEP_DELAY 15` waits 15 microseconds after each loop of the stepping code. Lower numbers move the 
 digits faster.
-- `#define SIMULATE_12_HOUR 1` to display 12 hour time on a 24 hour clock
 - `#define MICROSTEPPING_MULTIPLIER 32` indicates that the stepper drivers are set for 1/32 microstepping. A default value is set based on `DRIVER_TYPE`.
 
 ## Libraries
@@ -89,7 +88,7 @@ digits faster.
 ## Things to do
 - [x] Toggle demo mode through config page
 - [x] If displayed time is fast by one hour and current minute is after 50, wait for the current time to catch up rather than advancing by 23 hours.
-- [ ] Support 12 hour cams
+- [x] Support 12 hour cams
 - [x] Support 12 hour display with 24 hour cams
 - [x] Get current time from GPS with a Neo 6M module *(it's just so easy to add silly things to your AliExpress order)*
 - [ ] Get current time from radio time signals - DCF77, MSF, WWVB *(...it's really really easy to add things to your order)*

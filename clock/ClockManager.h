@@ -1,6 +1,7 @@
 #ifndef CLOCKMANAGER_H
 #define CLOCKMANAGER_H
 
+#include <Preferences.h>
 #include "settings.h"
 #include "StepperDriver.h"
 
@@ -18,6 +19,16 @@ enum time_source_t {
   GPS
 };
 
+enum clock_mode_t {
+  MODE_24 = 0,
+  MODE_12 = 1,
+  MODE_SIMULATE12 = 2
+};
+
+static const char *CLOCK_MODE_STRING[] = {
+    "24 hour", "12 hour", "simulated 12 hour"
+};
+
 class ClockManager {
 public:
   time_source_t time_source = NONE;
@@ -29,6 +40,7 @@ public:
   void set_current_time(int hour, int minute, int second);
   void set_current_date(int day, int month, int year);
   void set_displayed_time_to_current();
+  void set_mode(clock_mode_t mode);
   void toggle_demo();
 
   void set_logger(logger_cb_t logger) {
@@ -87,7 +99,9 @@ private:
   state_t _state = RUN;
   bool _flagCurrentMinute;
   bool _flagZeroMinute;
+  clock_mode_t _mode;
 
+  Preferences _preferences;
   StepperDriver _stepper;
 
 #if ENABLE_TFT == 1  
