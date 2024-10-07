@@ -68,7 +68,7 @@ void setup() {
 
 #if ENABLE_WIFI == 1
   wifi_manager.begin();
-  wifi_manager.start_mdns("clock");
+  wifi_manager.start_mdns();
 
   start_server();
 #endif
@@ -195,6 +195,22 @@ void start_server() {
     }
   });
 
+  server.on("/set-name", HTTP_POST, [](AsyncWebServerRequest *request) {
+    if (request->hasParam("name", true)) {
+      String name = request->getParam("name", true)->value();
+
+      wifi_manager.set_name(name);
+
+      request->send(200, "text/plain", name);
+      delay(3000);
+      wifi_manager.begin();
+      wifi_manager.start_mdns();
+
+    } else {
+      request->send_P(400, "text/plain", "Missing parameters");
+    }
+  });
+
   server.on("/calibrate-hour", HTTP_POST, [](AsyncWebServerRequest *request) {
     clock_manager.request_calibrate_hour();
     request->send_P(200, "text/plain", "OK");
@@ -313,11 +329,11 @@ void start_buttons() {
 
   third_button.onLongPress([]() {
     send_message("Third long press");
+    clock_manager.request_set_minutes();
   });
 
   third_button.onLongRelease([]() {
     send_message("Third long release");
-    clock_manager.request_set_minutes();
   });
 
   third_button.onMultiClick([](int32_t counter) {

@@ -173,6 +173,14 @@ const char CONFIG_HTML[] = R"---(
                 </form>
             </div>
 
+            <div class="card">
+                <h2>Name</h2>
+                <form action="/set-name" method="post">
+                    <p><label for="tz">Hostname and SSID</label><input type="text" name="name" id="name" /></p>
+                    <p><input type="submit" value="Save" /></p>
+                </form>
+            </div>
+
             <div class="log">
                 <h2>Messages</h2>
                 <pre id="log-messages"></pre>

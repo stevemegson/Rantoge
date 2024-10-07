@@ -23,10 +23,11 @@ void WifiManager::begin() {
   _preferences.begin("wifi", false);
   String ssid = _preferences.getString("ssid", ""); 
   String password = _preferences.getString("password", "");
+  String name = _preferences.getString("name", "clock");
   _preferences.end();
 
   if (ssid != "" && password != ""){
-    set_rgb(255,128,0);
+    set_rgb(255, 0, 255);
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid.c_str(), password.c_str());
     WiFi.setTxPower(WIFI_POWER_8_5dBm);
@@ -52,7 +53,7 @@ void WifiManager::begin() {
   }
 
   WiFi.mode(WIFI_AP);
-  boolean result = WiFi.softAP("clock", NULL);
+  boolean result = WiFi.softAP(name.c_str(), NULL);
   if (result == true) {
     WiFi.setTxPower(WIFI_POWER_8_5dBm);
 
@@ -68,11 +69,16 @@ void WifiManager::begin() {
   }
 }
 
-void WifiManager::start_mdns(const char* host) {
-  if (!MDNS.begin(host)) {
+void WifiManager::start_mdns() {
+  _preferences.begin("wifi", false);
+  String name = _preferences.getString("name", "clock");
+  _preferences.end();
+
+    if (!MDNS.begin(name.c_str())) {
     Serial.println("Error setting up mDNS responder");
+  } else {
+    Serial.printf("mDNS responder started: %s.local\n", name);
   }
-  Serial.println("mDNS responder started");
 }
 
 void WifiManager::set_credentials(String ssid, String password) {
@@ -84,3 +90,13 @@ void WifiManager::set_credentials(String ssid, String password) {
   Serial.print("Stored ssid ");
   Serial.println(ssid);
 }
+
+void WifiManager::set_name(String name) {
+  _preferences.begin("wifi", false);
+  _preferences.putString("name", name); 
+  _preferences.end();
+
+  Serial.print("Stored name ");
+  Serial.println(name);
+}
+
