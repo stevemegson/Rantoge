@@ -55,7 +55,7 @@ void WifiManager::begin() {
   WiFi.mode(WIFI_AP);
   boolean result = WiFi.softAP(name.c_str(), NULL);
   if (result == true) {
-    WiFi.setTxPower(WIFI_POWER_8_5dBm);
+    WiFi.setTxPower(WIFI_POWER_17dBm);
 
     set_rgb(0, 0, 255);
 

@@ -1,5 +1,7 @@
 #include "settings.h"
 
+#define VERSION "Version 2.0.0"
+
 void set_rgb(uint8_t r, uint8_t g, uint8_t b) {
 #ifdef PIN_RGB
   neopixelWrite(PIN_RGB, r * RGB_BRIGHTNESS / 255, g * RGB_BRIGHTNESS / 255, b * RGB_BRIGHTNESS / 255);
@@ -246,7 +248,7 @@ void start_server() {
       Serial.printf("Client reconnected. Last message ID that it got is: %u\n", client->lastId());
     }
 
-    client->send("Client connected", NULL, millis(), 500);
+    client->send(VERSION, NULL, millis(), 500);
   });
   server.addHandler(&events);
 
