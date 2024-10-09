@@ -133,14 +133,6 @@ const char CONFIG_HTML[] = R"---(
             </div>
 
             <div class="card">
-                <h2>Time zone</h2>
-                <form action="/set-tz" method="post">
-                    <p><label for="tz">IANA name or POSIX string</label><input type="text" name="tz" id="tz" /></p>
-                    <p><input type="submit" value="Save" /></p>
-                </form>
-            </div>
-
-            <div class="card">
                 <h2>Calibrate</h2>
                 <form action="/calibrate-hour" method="post">
                     <p><input type="submit" value="Hour" /></p>
@@ -154,9 +146,38 @@ const char CONFIG_HTML[] = R"---(
             </div>
 
             <div class="card">
+                <h2>Mode</h2>
+                <form action="/set-mode?m=0" method="post">
+                    <p><input type="submit" value="24 hour" /></p>
+                </form>
+                <form action="/set-mode?m=1" method="post">
+                    <p><input type="submit" value="12 hour" /></p>
+                </form>
+                <form action="/set-mode?m=2" method="post">
+                    <p><input type="submit" value="Simulate 12 hour" /></p>
+                </form>                
+            </div>
+
+            <div class="card">
+                <h2>Time zone</h2>
+                <form action="/set-tz" method="post">
+                    <p><label for="tz">IANA name or POSIX string</label><input type="text" name="tz" id="tz" /></p>
+                    <p><input type="submit" value="Save" /></p>
+                </form>
+            </div>
+
+            <div class="card">
                 <h2>Demo</h2>
                 <form action="/toggle-demo" method="post">
                     <p><input type="submit" value="Toggle" /></p>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Name</h2>
+                <form action="/set-name" method="post">
+                    <p><label for="tz">Hostname and SSID</label><input type="text" name="name" id="name" /></p>
+                    <p><input type="submit" value="Save" /></p>
                 </form>
             </div>
 

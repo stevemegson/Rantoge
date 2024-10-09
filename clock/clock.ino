@@ -1,5 +1,13 @@
 #include "settings.h"
 
+#define VERSION "Version 2.0.0"
+
+void set_rgb(uint8_t r, uint8_t g, uint8_t b) {
+#ifdef PIN_RGB
+  neopixelWrite(PIN_RGB, r * RGB_BRIGHTNESS / 255, g * RGB_BRIGHTNESS / 255, b * RGB_BRIGHTNESS / 255);
+#endif
+}
+
 #if ENABLE_BUTTONS == 1
 #include <espasyncbutton.hpp>
 #endif
@@ -11,7 +19,7 @@
 #endif
 
 #if ENABLE_OTA == 1
-#include <ElegantOTA.h>
+#include "src/ElegantOTA/ElegantOTA.h"
 #endif
 
 #if ENABLE_GPS == 1
@@ -31,6 +39,10 @@ TimeZoneManager time_zone_manager;
 #if ENABLE_BUTTONS == 1
 AsyncEventButton left_button(PIN_LEFT_BUTTON, LOW);
 AsyncEventButton right_button(PIN_RIGHT_BUTTON, LOW);
+
+#ifdef PIN_THIRD_BUTTON
+AsyncEventButton third_button(PIN_THIRD_BUTTON, LOW);
+#endif
 #endif
 
 #if ENABLE_WIFI == 1
@@ -58,7 +70,7 @@ void setup() {
 
 #if ENABLE_WIFI == 1
   wifi_manager.begin();
-  wifi_manager.start_mdns("clock");
+  wifi_manager.start_mdns();
 
   start_server();
 #endif
@@ -86,7 +98,15 @@ void loop() {
 
   clock_manager.tick();
 
+#if ENABLE_OTA == 1  
+  ElegantOTA.loop();
+#endif  
+  
+#if ENABLE_TFT == 1  
+  delay(100);
+#else
   delay(1000);
+#endif
 }
 
 void send_message(const char *format, ...) {
@@ -177,6 +197,22 @@ void start_server() {
     }
   });
 
+  server.on("/set-name", HTTP_POST, [](AsyncWebServerRequest *request) {
+    if (request->hasParam("name", true)) {
+      String name = request->getParam("name", true)->value();
+
+      wifi_manager.set_name(name);
+
+      request->send(200, "text/plain", name);
+      delay(3000);
+      wifi_manager.begin();
+      wifi_manager.start_mdns();
+
+    } else {
+      request->send_P(400, "text/plain", "Missing parameters");
+    }
+  });
+
   server.on("/calibrate-hour", HTTP_POST, [](AsyncWebServerRequest *request) {
     clock_manager.request_calibrate_hour();
     request->send_P(200, "text/plain", "OK");
@@ -197,12 +233,22 @@ void start_server() {
     request->send_P(200, "text/plain", "OK");
   });
 
+  server.on("/set-mode", HTTP_POST, [](AsyncWebServerRequest *request) {
+    if (request->hasParam("m")) {
+      int mode = request->getParam("m")->value().toInt();
+      clock_manager.set_mode((clock_mode_t)mode);
+
+      request->send_P(200, "text/plain", "OK");
+    } else {
+      request->send_P(400, "text/plain", "Missing parameters");
+    }  });
+
   events.onConnect([](AsyncEventSourceClient *client) {
     if (client->lastId()) {
       Serial.printf("Client reconnected. Last message ID that it got is: %u\n", client->lastId());
     }
 
-    client->send("Connected", NULL, millis(), 500);
+    client->send(VERSION, NULL, millis(), 500);
   });
   server.addHandler(&events);
 
@@ -275,5 +321,32 @@ void start_buttons() {
   });
 
   right_button.enable();
+
+#ifdef PIN_THIRD_BUTTON
+  third_button.begin();
+
+  third_button.onClick([]() {
+    send_message("Third click");
+  });
+
+  third_button.onLongPress([]() {
+    send_message("Third long press");
+    clock_manager.request_set_minutes();
+  });
+
+  third_button.onLongRelease([]() {
+    send_message("Third long release");
+  });
+
+  third_button.onMultiClick([](int32_t counter) {
+    if (counter == 2) {
+      send_message("Third double click");
+      clock_manager.toggle_demo();
+    }
+  });
+
+  third_button.enable();
+#endif
+
 }
 #endif

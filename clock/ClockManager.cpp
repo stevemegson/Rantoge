@@ -1,10 +1,22 @@
 #include <Arduino.h>
 
 #include "ClockManager.h"
-#include "settings.h"
 
 void ClockManager::begin() {
   _stepper.begin();
+
+  _preferences.begin("time", false);
+  _mode = (clock_mode_t)_preferences.getInt("mode", 0);
+  _preferences.end();
+
+  _stepper.set_12_hour(_mode == MODE_12);
+
+  (*_logger)("Set mode to %s", CLOCK_MODE_STRING[_mode]);
+
+#if ENABLE_TFT == 1
+  _seconds_display.begin();
+  _stepper.set_seconds_display(&_seconds_display);
+#endif
 }
 
 void ClockManager::start_ntp() {
@@ -18,6 +30,8 @@ void ClockManager::start_ntp() {
 
   time_source = SNTP;
 
+  set_rgb(0, 255, 0);
+
   log_current_time();
   set_displayed_time_to_current();
   _state = RUN;
@@ -26,22 +40,26 @@ void ClockManager::start_ntp() {
 void ClockManager::tick() {
   if (_state == CALIBRATE_HOUR) {
     (*_logger)("Calibrate hour");
+    set_rgb(255, 0, 255);
 
     _calibrating = true;
     _stepper.calibrate_hour(_calibrating);
 
     (*_logger)("Calibration done");
+    set_rgb(0, 0, 0);
 
     return;
   }
 
   if (_state == CALIBRATE_MINUTE) {
     (*_logger)("Calibrate minute");
+    set_rgb(255, 0, 255);
 
     _calibrating = true;
     _stepper.calibrate_minute(_calibrating);
 
     (*_logger)("Calibration done");
+    set_rgb(0, 0, 0);
 
     return;
   }
@@ -52,6 +70,7 @@ void ClockManager::tick() {
     _stepper.step(true, true);
     delay(500);
     _stepper.step(false, true);
+    delay(500);
 
     adjust_displayed_hour(2);
     adjust_displayed_minute(2);
@@ -60,7 +79,9 @@ void ClockManager::tick() {
   }
 
   if (_state == SET_MINUTES) {
+    set_rgb(0, 255, 0);
     set_minutes();
+    set_rgb(0, 0, 0);
     _state = RUN;
 
     return;
@@ -73,9 +94,11 @@ void ClockManager::toggle_demo() {
   _calibrating = false;
   if (_state == DEMO) {
     (*_logger)("End demo");
+    set_rgb(0, 0, 0);
     _state = RUN;
   } else {
     (*_logger)("Start demo");
+    set_rgb(0, 255, 255);
     _state = DEMO;
   }
 }
@@ -83,6 +106,10 @@ void ClockManager::toggle_demo() {
 void ClockManager::set_displayed_time(int hour, int minute) {
   _displayedHour = hour;
   _displayedMinute = minute;
+
+  if (_mode == MODE_12 && _displayedHour == 12) {
+    _displayedHour = 0;
+  }
 
   (*_logger)("Set displayed time to %02d:%02d\n", _displayedHour, _displayedMinute);
 }
@@ -94,23 +121,28 @@ void ClockManager::set_displayed_time_to_current() {
   int currentHour = timeinfo.tm_hour;
   int currentMinute = timeinfo.tm_min;
 
-#if SIMULATE_12_HOUR == 1
-  if (currentHour == 0) {
-    currentHour = 12;
-  } else if (currentHour > 12) {
+  if (_mode == MODE_SIMULATE12) {
+    if (currentHour == 0) {
+      currentHour = 12;
+    } else if (currentHour > 12) {
+      currentHour -= 12;
+    }
+  } else if (_mode == MODE_12 && currentHour >= 12) {
     currentHour -= 12;
   }
-#endif
 
   set_displayed_time(currentHour, currentMinute);
 }
 
 void ClockManager::adjust_displayed_hour(int count) {
   _displayedHour = _displayedHour + count;
+
+  int mod = _mode == MODE_12 ? 12 : 24;
+
   if (_displayedHour < 0)
-    _displayedHour += 24;
-  else if (_displayedHour >= 24)
-    _displayedHour -= 24;
+    _displayedHour += mod;
+  else if (_displayedHour >= mod)
+    _displayedHour -= mod;
 }
 
 void ClockManager::adjust_displayed_minute(int count) {
@@ -155,6 +187,18 @@ void ClockManager::set_current_date(int day, int month, int year) {
   log_current_time();
 }
 
+void ClockManager::set_mode(clock_mode_t mode) {
+  _mode = mode;
+
+  _preferences.begin("time", false);
+  _preferences.putInt("mode", mode);
+  _preferences.end();
+
+  _stepper.set_12_hour(_mode == MODE_12);
+
+  (*_logger)("Set mode to %s", CLOCK_MODE_STRING[_mode]);
+}
+
 void ClockManager::log_current_time() {
   struct tm timeinfo;
   time_t now = time(0);
@@ -171,24 +215,26 @@ void ClockManager::sync_to_current_time() {
 
   int currentHour = timeinfo.tm_hour;
   int currentMinute = timeinfo.tm_min;
+  int currentSecond = timeinfo.tm_sec;
 
-#if SIMULATE_12_HOUR == 1
-  if (currentHour == 0) {
-    currentHour = 12;
-  } else if (currentHour > 12) {
+  if (_mode == MODE_SIMULATE12) {
+    if (currentHour == 0) {
+      currentHour = 12;
+    } else if (currentHour > 12) {
+      currentHour -= 12;
+    }
+  } else if (_mode == MODE_12 && currentHour >= 12) {
     currentHour -= 12;
   }
-#endif
 
-  if (currentHour == _displayedHour && currentMinute == _displayedMinute) {
-    return;
-  }
+  bool waiting = false;
 
   int offsetHour = currentHour - _displayedHour;
+  int mod = _mode == MODE_12 ? 12 : 24;
   if (offsetHour < 0)
-    offsetHour += 24;
-  else if (offsetHour >= 24)
-    offsetHour -= 24;
+    offsetHour += mod;
+  else if (offsetHour >= mod)
+    offsetHour -= mod;
 
   int offsetMinute = currentMinute - _displayedMinute;
   if (offsetMinute < 0)
@@ -198,17 +244,32 @@ void ClockManager::sync_to_current_time() {
 
   if (offsetMinute > 50) {
     offsetMinute = 0;
+    waiting = true;
   }
 
-  if(offsetHour == 23 && currentMinute >= 50) {
+  if (offsetHour == 23 && currentMinute >= 50) {
     offsetHour = 0;
+    waiting = true;
   }
 
-  if(offsetHour == 0 && offsetMinute == 0) {
+#if ENABLE_TFT == 1
+  _seconds_display.update(currentMinute, currentSecond, waiting);
+#endif
+
+  if (waiting) {
+    set_rgb(255, 0, 0);
+  }
+
+  if (offsetHour == 0 && offsetMinute == 0) {
     return;
   }
 
+  set_rgb(0, 0, 0);
+
   (*_logger)("%02d:%02d -> %02d:%02d", _displayedHour, _displayedMinute, currentHour, currentMinute);
+
+  int stepGroup = offsetHour > offsetMinute ? offsetHour : offsetMinute;
+  int stepsDone = 0;
 
   while (offsetHour > 0 && offsetMinute > 0) {
     (*_logger)("  Advance hour and minute");
@@ -217,7 +278,8 @@ void ClockManager::sync_to_current_time() {
     offsetMinute--;
     adjust_displayed_minute(1);
 
-    _stepper.step(true, true);
+    _stepper.step(true, true, stepsDone, stepGroup);
+    ++stepsDone;
   }
 
   while (offsetHour > 0) {
@@ -225,7 +287,8 @@ void ClockManager::sync_to_current_time() {
     offsetHour--;
     adjust_displayed_hour(1);
 
-    _stepper.step(true, false);
+    _stepper.step(true, false, stepsDone, stepGroup);
+    ++stepsDone;
   }
 
   while (offsetMinute > 0) {
@@ -233,7 +296,8 @@ void ClockManager::sync_to_current_time() {
     offsetMinute--;
     adjust_displayed_minute(1);
 
-    _stepper.step(false, true);
+    _stepper.step(false, true, stepsDone, stepGroup);
+    ++stepsDone;
   }
 }
 
@@ -252,7 +316,7 @@ void ClockManager::set_minutes() {
   if (timeKnown) {
     struct tm timeinfo;
     time_t now = time(0);
-    localtime_r(&now, &timeinfo);      
+    localtime_r(&now, &timeinfo);
     currentMinuteAtStart = timeinfo.tm_min;
   }
 
