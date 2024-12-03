@@ -247,7 +247,7 @@ void ClockManager::sync_to_current_time() {
     waiting = true;
   }
 
-  if (offsetHour == 23 && currentMinute >= 50) {
+  if (offsetHour == mod - 1 && currentMinute >= 50) {
     offsetHour = 0;
     waiting = true;
   }
@@ -264,7 +264,9 @@ void ClockManager::sync_to_current_time() {
     return;
   }
 
-  set_rgb(0, 0, 0);
+  if (!waiting) {
+    set_rgb(0, 0, 0);
+  }
 
   (*_logger)("%02d:%02d -> %02d:%02d", _displayedHour, _displayedMinute, currentHour, currentMinute);
 
