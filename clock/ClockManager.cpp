@@ -273,17 +273,6 @@ void ClockManager::sync_to_current_time() {
   int stepGroup = offsetHour > offsetMinute ? offsetHour : offsetMinute;
   int stepsDone = 0;
 
-  while (offsetHour > 0 && offsetMinute > 0) {
-    (*_logger)("  Advance hour and minute");
-    offsetHour--;
-    adjust_displayed_hour(1);
-    offsetMinute--;
-    adjust_displayed_minute(1);
-
-    _stepper.step(true, true, stepsDone, stepGroup);
-    ++stepsDone;
-  }
-
   while (offsetHour > 0) {
     (*_logger)("  Advance hour");
     offsetHour--;

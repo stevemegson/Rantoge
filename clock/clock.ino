@@ -1,6 +1,6 @@
 #include "settings.h"
 
-#define VERSION "Version 2.0.0"
+#define VERSION "Version 2.0.1"
 
 void set_rgb(uint8_t r, uint8_t g, uint8_t b) {
 #ifdef PIN_RGB
