@@ -99,10 +99,10 @@ int StepperDriver::get_hour_step_count() {
 int StepperDriver::get_minute_step_count() {
   static int offset = 0;
 
-  int steps = 1180;
+  int steps = 786;
   offset = (offset + 1) % 25;
   if (offset == 0)
-    steps -= 7;
+    steps += 12;
 
   return steps * MICROSTEPPING_MULTIPLIER;
 }
