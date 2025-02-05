@@ -55,8 +55,8 @@ void StepperDriver::step(bool hour, bool minute, int stepsDone, int stepGroup) {
       minute_steps--;
     }
 
-    if (offset % 6 == 0 && hour_steps > 0) {
-      if (_is_12_hour || offset % 12 == 0) {
+    if (offset % 4 == 0 && hour_steps > 0) {
+      if (_is_12_hour || offset % 8 == 0) {
         digitalWrite(PIN_HOUR_STEP, HIGH);
         delayMicroseconds(5);
         digitalWrite(PIN_HOUR_STEP, LOW);
