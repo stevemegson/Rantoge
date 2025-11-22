@@ -217,6 +217,12 @@ void ClockManager::sync_to_current_time() {
   int currentMinute = timeinfo.tm_min;
   int currentSecond = timeinfo.tm_sec;
 
+  // Don't advance minutes between 7pm and 7am
+  if (currentHour > 18 && currentHour < 7 ) {
+    currentMinute = 0;
+    currentSecond = 0;
+  }
+
   if (_mode == MODE_SIMULATE12) {
     if (currentHour == 0) {
       currentHour = 12;
